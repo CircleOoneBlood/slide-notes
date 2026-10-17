@@ -64,7 +64,7 @@ git push origin v0.3.1
 
 Actions 首先核对标签与四处版本，然后构建前端、运行 Linux 完整回归、从清单导出源码并校验 wheel / sdist。相同 wheel 随后在 Linux、Windows、macOS 安装验证，覆盖桌面入口、中文路径、临时笔记与真实 Python worker；全部通过才创建 Release。发布包是需要 Python 3.12+ 的本地应用，不是自带解释器的 `.exe`、`.dmg` 或 AppImage。
 
-Release 附件包含源码 `.zip` / `.tar.gz`、Python wheel / sdist、`RELEASE.json` 与 `SHA256SUMS`。源码 ZIP 中有 Linux / macOS 的 `install.sh` 与 Windows 的 `install.ps1`。用户下载解压后执行相应脚本，不需要 Node.js，也不需要克隆 Git。安装和新 Workspace 的 Python 依赖下载通常需要网络。PDF 文字提取另需 Poppler；隔离命令执行目前仅适用于安装了 Bubblewrap 和 `prlimit` 的 Linux。
+Release 附件包含源码 `.zip` / `.tar.gz`、Python wheel / sdist、`RELEASE.json` 与 `SHA256SUMS`。源码 ZIP 中有 Linux / macOS 的 `install.sh` 与 Windows 的 `install.ps1`。用户下载解压后执行相应脚本，不需要 Node.js，也不需要克隆 Git。安装和新 Workspace 的 Python 依赖下载通常需要网络。PDF 文字提取另需 Poppler；隔离命令执行目前仅适用于安装了 Bubblewrap 0.8+ 和 `prlimit` 的 Linux。
 
 本地可在一个尚不存在的临时目录构建同样的附件，不轮转正式 `dist`：
 

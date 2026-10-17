@@ -13,6 +13,7 @@ import threading
 from urllib.request import urlopen, Request
 import webbrowser
 from http.server import ThreadingHTTPServer
+from slide_notes import __version__
 from slide_notes.application import Application
 from slide_notes.web.server import handler_factory
 from slide_notes.paths import STATIC_ROOT
@@ -92,7 +93,7 @@ def _desktop_macos(data_home, executable):
     launcher.write_text('#!/bin/sh\nexec '+shlex.quote(str(executable))+' -m slide_notes.launcher "$@"\n',encoding='utf-8')
     launcher.chmod(0o755)
     with info.open('wb') as output:
-        plistlib.dump({'CFBundleName':'Slide Notes','CFBundleDisplayName':'Slide Notes','CFBundleIdentifier':'org.slidenotes.local','CFBundleExecutable':'slide-notes','CFBundlePackageType':'APPL','CFBundleVersion':'1','NSHighResolutionCapable':True},output)
+        plistlib.dump({'CFBundleName':'Slide Notes','CFBundleDisplayName':'Slide Notes','CFBundleIdentifier':'org.slidenotes.local','CFBundleExecutable':'slide-notes','CFBundlePackageType':'APPL','CFBundleVersion':__version__,'CFBundleShortVersionString':__version__,'NSHighResolutionCapable':True},output)
     marker.write_text(_DESKTOP_OWNER+'\n',encoding='utf-8')
     return target
 

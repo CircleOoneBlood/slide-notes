@@ -30,7 +30,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 
 从 [源码仓库](https://github.com/CircleOoneBlood/slide-notes) 克隆后也可使用对应安装命令。Release 中的 `.whl` 面向已配置 Python 虚拟环境的用户，安装后执行 `slide-notes desktop install` 注册入口。升级时先退出应用，再用新发布包重新执行安装器；Workspace 中的笔记和资料保留。
 
-三种系统均可使用笔记、公式、Python cell、工作区和文件工具。Agent 的隔离命令执行需要 Linux Bubblewrap 与 `prlimit`，Windows / macOS 暂不提供这个工具。PDF 浏览不需要额外安装；Agent 提取 PDF 文字和页面图像需要 Poppler 的 `pdfinfo`、`pdftotext`、`pdftoppm`。本地 Claude Code 需在该设备上单独安装并登录。
+三种系统均可使用笔记、公式、Python cell、工作区和文件工具。Agent 的隔离命令执行需要 Linux Bubblewrap 0.8+ 与 `prlimit`，Windows / macOS 暂不提供这个工具。PDF 浏览不需要额外安装；Agent 提取 PDF 文字和页面图像需要 Poppler 的 `pdfinfo`、`pdftotext`、`pdftoppm`。本地 Claude Code 需在该设备上单独安装并登录。
 
 ## 工作区与笔记目录
 
@@ -70,7 +70,7 @@ npm ci --prefix frontend
 ./start-notes.sh
 ```
 
-源码已包含前端构建产物。开发时使用 Node.js 22+，前端修改后执行 `npm run build --prefix frontend`，更新离线资源、编辑器和 Markdown 构建产物。浏览器回归使用 Playwright 和 Chrome；设置 `CHROME_BIN` 可指定部分 JavaScript 测试的浏览器，Python 浏览器测试默认使用 `/usr/bin/google-chrome`。PDF 文字提取需要 Poppler，AI 的隔离命令工具需要 Linux Bubblewrap 和 `prlimit`；未安装时这些工具会显示不可用。
+源码已包含前端构建产物。开发时使用 Node.js 22+，前端修改后执行 `npm run build --prefix frontend`，更新离线资源、编辑器和 Markdown 构建产物。浏览器回归使用 Playwright 和 Chrome；设置 `CHROME_BIN` 可指定部分 JavaScript 测试的浏览器，Python 浏览器测试默认使用 `/usr/bin/google-chrome`。PDF 文字提取需要 Poppler，AI 的隔离命令工具需要 Linux Bubblewrap 0.8+ 和 `prlimit`；未安装时这些工具会显示不可用。
 
 ```bash
 PYTHONPATH=src .venv/bin/python -m unittest discover -s tests/backend -p 'test_*.py'

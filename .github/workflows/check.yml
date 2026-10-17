@@ -8,7 +8,7 @@ permissions:
   contents: read
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
@@ -30,6 +30,17 @@ jobs:
           version=$(python scripts/build_release.py --check-version "${tag_arguments[@]}")
           echo "version=$version" >> "$GITHUB_OUTPUT"
       - run: sudo apt-get update && sudo apt-get install -y poppler-utils bubblewrap
+      - name: Enable and verify isolated command execution on the CI runner
+        run: |
+          # Ubuntu's userns restriction is relaxed only on this disposable CI
+          # runner. The application still drops capabilities, disables nested
+          # namespaces and has no unsandboxed command fallback.
+          if [[ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]]; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          bwrap_help=$(bwrap --help)
+          [[ "$bwrap_help" == *'--disable-userns'* ]]
+          bwrap --unshare-all --unshare-user --disable-userns --ro-bind / / -- /usr/bin/true
       - name: Install development dependencies
         run: |
           python -m venv .venv

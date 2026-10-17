@@ -1,5 +1,6 @@
 """Agent commands run in a namespace sandbox, never in the app process."""
 import base64
+from functools import lru_cache
 import hashlib
 import json
 import os
@@ -43,12 +44,26 @@ print(json.dumps(result))
 '''
 
 
+@lru_cache(maxsize=8)
+def _sandbox_features(executable, modified, size):
+    # The binary's metadata invalidates this cache after an engine upgrade.
+    try:
+        result=subprocess.run([executable,'--help'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=3)
+    except (OSError,subprocess.SubprocessError):return False
+    return result.returncode==0 and b'--disable-userns' in result.stdout and b'--unshare-user' in result.stdout
+
+
 def available():
-    return sys.platform.startswith('linux') and bool(shutil.which('bwrap')) and bool(shutil.which('prlimit'))
+    if not sys.platform.startswith('linux') or not shutil.which('prlimit'):return False
+    executable=shutil.which('bwrap')
+    if not executable:return False
+    try:metadata=Path(executable).stat()
+    except OSError:return False
+    return _sandbox_features(executable,metadata.st_mtime_ns,metadata.st_size)
 
 
 def run_command(workspace,command,cwd='',timeout=30,job=None):
-    if not available():raise ValueError('本机没有可用的隔离执行器；不会退回无隔离 shell')
+    if not available():raise ValueError('本机没有可用的隔离执行器（需要支持 --disable-userns 的 Bubblewrap 0.8+ 和 prlimit）；不会退回无隔离 shell')
     if not isinstance(command,str) or not command.strip() or len(command)>16000 or '\0' in command:raise ValueError('命令无效或过长')
     if type(timeout) is not int or not 1<=timeout<=60:raise ValueError('执行超时须为 1–60 秒')
     directory=workspace.root if not cwd else workspace.editable_path(cwd)
@@ -74,10 +89,19 @@ def run_command(workspace,command,cwd='',timeout=30,job=None):
                     masked+=1;args.extend(['--ro-bind','/dev/null','/workspace/'+path.relative_to(workspace.root).as_posix()])
             if masked>1000:raise ValueError('Workspace 内部目录过多，请缩小工作区')
         runtime=Path(sys.prefix)
+        base_runtime=Path(sys.base_prefix).resolve()
+        # Venv interpreters can point into a separately installed CPython (for
+        # example setup-python's /opt/hostedtoolcache/... prefix). Mount only
+        # that interpreter installation, never its parent or inherited paths.
+        system_roots=[Path('/'+name) for name in ('usr','lib','lib64') if Path('/'+name).exists()]
+        if not any(base_runtime.is_relative_to(root) for root in system_roots) and base_runtime!=runtime.resolve():
+            if base_runtime==Path('/') or base_runtime==Path.home().resolve() or workspace.root.is_relative_to(base_runtime):
+                raise ValueError('Python 基础环境范围过大，不能用作隔离运行时')
+            args.extend(['--ro-bind',str(base_runtime),str(base_runtime)])
         # A separate Python mount supplies installed packages, without user home.
         if runtime!=Path('/usr'):args.extend(['--ro-bind',str(runtime),'/runtime'])
         else:args.extend(['--symlink','usr','/runtime'])
-        for key,value in {'PATH':'/runtime/bin:/usr/bin:/bin','HOME':'/scratch/home','NOTE_OUTPUT_DIR':'/scratch','PYTHONNOUSERSITE':'1','PYTHONDONTWRITEBYTECODE':'1','OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1','LANG':'C.UTF-8','MPLCONFIGDIR':'/scratch/home'}.items():args.extend(['--setenv',key,value])
+        for key,value in {'PATH':'/runtime/bin:/usr/bin:/bin','HOME':'/scratch/home','NOTE_OUTPUT_DIR':'/scratch','PYTHONNOUSERSITE':'1','PYTHONDONTWRITEBYTECODE':'1','OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1','LANG':'C.UTF-8','MPLCONFIGDIR':'/scratch/home','LD_LIBRARY_PATH':'/runtime/lib:'+str(base_runtime/'lib')}.items():args.extend(['--setenv',key,value])
         args.extend(['--chdir','/workspace'+('/'+cwd if cwd else ''),'--','/runtime/bin/python','-c',HELPER,command,str(timeout),json.dumps(sorted(EXPORTS))])
         import psutil
         threads=sum(process.info['num_threads'] or 1 for process in psutil.process_iter(['uids','num_threads']) if process.info['uids'] and process.info['uids'].real==os.getuid())

@@ -132,6 +132,55 @@ except OSError:print("network isolated")
     def test_command_timeout_stops_owned_namespace(self):
         result,_=self.execute('run_command',command='sleep 20',timeout=1)
         self.assertEqual(result['exitCode'],124)
+    def test_old_bubblewrap_does_not_advertise_or_run_isolated_commands(self):
+        import subprocess
+        from slide_notes.ai import command
+        command._sandbox_features.cache_clear()
+        engine='/test-only/bwrap'
+        from types import SimpleNamespace
+        metadata=SimpleNamespace(st_mtime_ns=1,st_size=100)
+        with patch.object(command.sys,'platform','linux'), patch.object(command.shutil,'which',side_effect=lambda name:engine if name=='bwrap' else '/test-only/prlimit'), patch.object(command.Path,'stat',return_value=metadata):
+            with patch.object(command.subprocess,'run',return_value=subprocess.CompletedProcess([engine,'--help'],0,b'--unshare-user\n')) as probe:
+                self.assertFalse(command.available())
+                with self.assertRaisesRegex(ValueError,'Bubblewrap 0.8'):
+                    command.run_command(self.workspace,'true')
+                probe.assert_called_once_with([engine,'--help'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=3)
+            # Replacing the binary invalidates the cached feature probe.
+            metadata.st_mtime_ns=2
+            with patch.object(command.subprocess,'run',return_value=subprocess.CompletedProcess([engine,'--help'],0,b'--unshare-user\n--disable-userns\n')):
+                self.assertTrue(command.available())
+        command._sandbox_features.cache_clear()
+    @unittest.skipUnless(command_available(),'Bubblewrap unavailable')
+    def test_separate_python_base_mounts_only_runtime_and_keeps_parent_private(self):
+        import os,shlex,shutil,subprocess,sys,sysconfig
+        from slide_notes.ai import command
+        parent=Path(self.temp.name)/'separate-python'
+        base=parent/'python-base';runtime=parent/'virtual-environment'
+        binary=base/'bin/python';binary.parent.mkdir(parents=True)
+        shutil.copy2(Path(sys._base_executable).resolve(),binary)
+        library=base/'lib';library.mkdir()
+        standard_library=Path(sysconfig.get_path('stdlib'))
+        shutil.copytree(standard_library,library/standard_library.name,ignore=shutil.ignore_patterns('site-packages','__pycache__'))
+        # setup-python uses a shared CPython outside /usr; preserve that library
+        # too, without mounting the account or tool-cache parent directories.
+        for shared in Path(sysconfig.get_config_var('LIBDIR')).glob('libpython*.so*'):
+            if shared.is_file():shutil.copy2(shared,library/shared.name)
+        environment=dict(os.environ,LD_LIBRARY_PATH=str(library),PYTHONNOUSERSITE='1')
+        environment.pop('PYTHONPATH',None);environment.pop('PYTHONHOME',None)
+        actual=subprocess.check_output([str(binary),'-c','import sys; print(sys.base_prefix)'],text=True,env=environment,timeout=15).strip()
+        self.assertEqual(Path(actual),base)
+        subprocess.run([str(binary),'-m','venv','--without-pip',str(runtime)],check=True,env=environment,timeout=30)
+        private=parent/'private.txt';private.write_text('PRIVATE PARENT',encoding='utf-8')
+        code=f'import os; from pathlib import Path; print("answer",40+3); print("parent_visible",Path({str(private)!r}).exists()); print("home_visible",Path({str(Path.home())!r}).exists())'
+        original_popen=subprocess.Popen
+        with patch.object(command.sys,'prefix',str(runtime)), patch.object(command.sys,'base_prefix',str(base)), patch.object(command.subprocess,'Popen',wraps=original_popen) as popen:
+            result=command.run_command(self.workspace,'python -c '+shlex.quote(code),timeout=10)
+        self.assertEqual(result['exitCode'],0,result)
+        self.assertIn('answer 43',result['output']);self.assertIn('parent_visible False',result['output']);self.assertIn('home_visible False',result['output'])
+        arguments=popen.call_args.args[0]
+        mounts=[arguments[index+1:index+3] for index,value in enumerate(arguments) if value=='--ro-bind']
+        self.assertIn([str(base),str(base)],mounts)
+        self.assertFalse(any(str(parent) in mount or str(Path.home()) in mount for mount in mounts))
     @unittest.skipUnless(available(),'Poppler unavailable')
     def test_pdf_reader_reads_unseen_pages_searches_and_renders_scanned_page(self):
         original=(self.workspace.root/'paper.pdf').read_bytes()
