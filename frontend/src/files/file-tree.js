@@ -114,7 +114,7 @@ async function revealActiveFile({automatic=false}={}){
  const path=editorTabs.active,root=fileRoot();
  if(automatic&&!fileTreeState.autoReveal)return refreshFileRows();
  if(!path||root&&path!==root&&!path.startsWith(root+'/')){
-  if(!automatic)toast(path?'当前文件不在“仅笔记”目录中，请切换到工作区文件。':'尚未打开文件');
+  if(!automatic)toast(path?'当前文件不在“笔记与 PDF”目录中，请切换到工作区文件。':'尚未打开文件');
   return refreshFileRows();
  }
  if(explorer.query&&!automatic){explorer.query='';const input=$('#file-search');if(input)input.value='';}
@@ -145,7 +145,7 @@ function installFileTreeToolbar(container){
  function sync(){
   $('#auto-reveal-file',tools).setAttribute('aria-pressed',String(fileTreeState.autoReveal));
   const hide=$('#hide-workspace-config',tools);hide.setAttribute('aria-pressed',String(explorer.hideConfig!==false));hide.disabled=explorer.mode==='notes';
-  hide.title=explorer.mode==='notes'?'仅笔记视图已隐藏配置文件':'隐藏配置文件 · 保留 notebooks 和用户内容';
+  hide.title=explorer.mode==='notes'?'笔记与 PDF 视图已隐藏配置文件':'隐藏配置文件 · 保留 notebooks 和用户内容';
  }
  sync();$('.files-tools',container).after(tools);
 }

@@ -353,7 +353,7 @@ class Workspace(FileOperations):
             pass
         return entry
 
-    def files(self, path="", notes_only=False, content_only=False):
+    def files(self, path="", notes_only=False, content_only=False, include_pdf=False):
         directory = self.notes_root if notes_only and not path else self.resolve(path)
         if notes_only and not directory.is_relative_to(self.notes_root):
             raise ValueError('仅笔记视图只能浏览专用笔记目录')
@@ -361,12 +361,14 @@ class Workspace(FileOperations):
             raise ValueError("目录不存在")
         visible=self.content_visibility() if content_only else lambda path:True
         entries = [self.describe(p) for p in directory.iterdir() if (not notes_only or p.name not in EXCLUDED) and visible(p.relative_to(self.root).as_posix())]
-        if notes_only: entries = [e for e in entries if e["kind"] in ("directory", "notebook", "marimo") and self.resolve(e['path']).is_relative_to(self.notes_root)]
+        if notes_only:
+            kinds = {"directory", "notebook", "marimo"} | ({"pdf"} if include_pdf else set())
+            entries = [e for e in entries if e["kind"] in kinds and self.resolve(e['path']).is_relative_to(self.notes_root)]
         entries.sort(key=lambda e: (e["kind"] != "directory", e["name"].lower()))
         return {"entries": entries, "path": directory.relative_to(self.root).as_posix(), "workspace": self.root.name,
                 "notesDirectory": self.notes_directory or ''}
 
-    def search(self, query="", notes_only=False, content_only=False):
+    def search(self, query="", notes_only=False, content_only=False, include_pdf=False):
         entries, scanned = [], 0
         # Dependency caches remain browsable in the tree, but are not search roots.
         excluded = EXCLUDED
@@ -380,13 +382,13 @@ class Workspace(FileOperations):
                 path = Path(directory) / name
                 key = path.relative_to(self.root).as_posix()
                 if not visible(key):continue
-                if notes_only and path.suffix not in (".json", ".py"):
+                if notes_only and path.suffix not in (".json", ".py") and not (include_pdf and path.suffix.lower() == ".pdf"):
                     continue
                 if notes_only and not path.resolve().is_relative_to(self.notes_root): continue
                 if not notes_only and query.lower() not in key.lower():
                     continue
                 entry = self.describe(path)
-                if notes_only and entry["kind"] not in ("notebook", "marimo"):
+                if notes_only and entry["kind"] not in ({"notebook", "marimo"} | ({"pdf"} if include_pdf else set())):
                     continue
                 if query.lower() not in (key + " " + entry.get("title", "")).lower():
                     continue
@@ -671,9 +673,9 @@ def handler_factory(workspace=None, application=None):
                         return self.respond({"path": key, "revision": revision, **snapshot,
                                              "stale": snapshot["executedRevision"] != revision})
                     if path == "/api/files":
-                        return self.respond(workspace.files(query.get("path", ""), query.get("notes")=="1", query.get('content')=='1'))
+                        return self.respond(workspace.files(query.get("path", ""), query.get("notes")=="1", query.get('content')=='1', include_pdf=query.get('pdf')=='1'))
                     if path == "/api/search":
-                        return self.respond(workspace.search(query.get("q", ""), query.get("notes") == "1", query.get('content')=='1'))
+                        return self.respond(workspace.search(query.get("q", ""), query.get("notes") == "1", query.get('content')=='1', include_pdf=query.get('pdf')=='1'))
                     if path == "/api/preview":
                         return self.respond(workspace.preview(query["path"]))
                     if path == "/api/packages":

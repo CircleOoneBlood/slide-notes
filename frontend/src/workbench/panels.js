@@ -82,19 +82,19 @@ function renderToolPanel(container) {
 }
 function renderFiles(container) {
   if(managedWorkbench&&!new URL(location.href).searchParams.has('workspace')){container.replaceChildren();installWorkspacePanelControls(container);const empty=document.createElement('p');empty.className='panel-footnote';empty.textContent='选择一个文件夹作为工作区';container.append(empty);return;}
-  container.innerHTML = `<div class="file-modes" role="group" aria-label="文件显示模式"><button data-mode="all">工作区文件</button><button data-mode="notes">仅笔记</button></div><div class="files-tools"><strong>${panelIcons.folder}<span>${escapeHTML(explorer.mode==='notes'&&explorer.notesDirectory?explorer.notesDirectory:explorer.workspace)}</span></strong><button id="new-notebook-button" class="icon-button" aria-label="新建笔记" title="新建笔记">${uiIcon('plus')}</button><button id="refresh-files" class="icon-button" aria-label="刷新文件列表" title="刷新">${uiIcon('refresh-cw')}</button></div>`;
+  container.innerHTML = `<div class="file-modes" role="group" aria-label="文件显示模式"><button data-mode="all">工作区文件</button><button data-mode="notes">笔记与 PDF</button></div><div class="files-tools"><strong>${panelIcons.folder}<span>${escapeHTML(explorer.mode==='notes'&&explorer.notesDirectory?explorer.notesDirectory:explorer.workspace)}</span></strong><button id="new-notebook-button" class="icon-button" aria-label="新建笔记" title="新建笔记">${uiIcon('plus')}</button><button id="refresh-files" class="icon-button" aria-label="刷新文件列表" title="刷新">${uiIcon('refresh-cw')}</button></div>`;
   container.querySelectorAll('[data-mode]').forEach(button => {
     button.setAttribute('aria-pressed',String(button.dataset.mode === explorer.mode));
     button.onclick = () => { explorer.mode = button.dataset.mode; explorer.selectedDirectory=fileRoot();resetFileDirectoryCache();fileTreeState.focusPath=null;fileTreeState.selectedPath=null; localStorage.setItem('slide-notes-files-mode', explorer.mode); renderFiles(container); };
   });
-  const search = panelSearch(explorer.query, explorer.mode === 'notes' ? '搜索笔记…' : '搜索工作区文件…');
+  const search = panelSearch(explorer.query, explorer.mode === 'notes' ? '搜索笔记与 PDF…' : '搜索工作区文件…');
   $('input',search).id='file-search';
   let timer;
   $('input',search).oninput = event => { explorer.query = event.target.value; clearTimeout(timer); timer = setTimeout(refreshFileRows,150); };
   container.append(search);
   const list = document.createElement('div'); list.id = 'file-tree'; installFileTree(list); container.append(list);
   const foot = document.createElement('p'); foot.className = 'panel-footnote';
-  foot.textContent = explorer.mode === 'notes' ? '点击笔记切换。可拖入系统文件和文件夹；导入后切换到工作区文件。' : '可拖入系统文件和文件夹，或选中目标文件夹后按 Ctrl+V。右键可复制、剪切、粘贴或导出。';
+  foot.textContent = explorer.mode === 'notes' ? '显示 notebooks 中的笔记与 PDF；其他资料请切换到工作区文件。' : '可拖入系统文件和文件夹，或选中目标文件夹后按 Ctrl+V。右键可复制、剪切、粘贴或导出。';
   container.append(foot);
   installFileToolbar(container);
   installFileTransferTargets(container);
@@ -110,7 +110,7 @@ async function refreshFileRows() {
   const list = $('#file-tree'); if (!list) return;
   try {
     if (explorer.query.trim()) {
-      const response = await api('/api/search?' + new URLSearchParams({q:explorer.query,notes:explorer.mode === 'notes' ? '1' : '0',content:explorer.mode!=='notes'&&explorer.hideConfig!==false?'1':'0'}));
+      const response = await api('/api/search?' + new URLSearchParams({q:explorer.query,notes:explorer.mode === 'notes' ? '1' : '0',pdf:'1',content:explorer.mode!=='notes'&&explorer.hideConfig!==false?'1':'0'}));
       if (serial !== explorer.serial || !list.isConnected) return;
       explorer.results = response.entries;
       const descriptors=response.entries.map((entry,index)=>({entry,depth:0,showPath:true,index,size:response.entries.length}));
@@ -148,7 +148,7 @@ async function loadDirectory(path) {
   if(!requests){requests=new Map();directoryRequests.set(directories,requests);}
   if(requests.has(path))return requests.get(path);
   const request=(async()=>{
-    const result=await api('/api/files?'+new URLSearchParams({path,notes:explorer.mode==='notes'?'1':'0',content:explorer.mode!=='notes'&&explorer.hideConfig!==false?'1':'0'}));
+    const result=await api('/api/files?'+new URLSearchParams({path,notes:explorer.mode==='notes'?'1':'0',pdf:'1',content:explorer.mode!=='notes'&&explorer.hideConfig!==false?'1':'0'}));
     if(directories!==explorer.directories)return;
     explorer.notesDirectory=result.notesDirectory||'';directories.set(path,result.entries);
   })();

@@ -98,3 +98,20 @@ class WorkspaceVisibilityTests(unittest.TestCase):
         self.assertIn('package.json',{entry['path'] for entry in self.workspace.files()['entries']})
         self.assertNotIn('package.json',self.paths())
         self.assertEqual({entry['path'] for entry in self.workspace.files(notes_only=True)['entries']},{note['path']})
+
+    def test_note_explorer_includes_pdf_in_nested_folders_and_search(self):
+        note=self.workspace.create('Visible')
+        self.write('notebooks/lecture/paper.pdf','%PDF-1.4\n')
+        self.write('notebooks/lecture/UPPER.PDF','%PDF-1.4\n')
+        self.write('notebooks/lecture/config.json','{}')
+        self.write('notebooks/lecture/data.csv')
+        self.write('material/outside.pdf','%PDF-1.4\n')
+        expected={'notebooks/lecture/paper.pdf','notebooks/lecture/UPPER.PDF'}
+        entries=self.workspace.files('notebooks/lecture',notes_only=True,include_pdf=True)['entries']
+        self.assertEqual({entry['path'] for entry in entries},expected)
+        self.assertTrue(all(entry['kind']=='pdf' for entry in entries))
+        self.assertEqual({entry['path'] for entry in self.workspace.search('.pdf',notes_only=True,include_pdf=True)['entries']},expected)
+        self.assertEqual({entry['path'] for entry in self.workspace.search(notes_only=True)['entries']},{note['path']})
+        self.assertEqual(self.workspace.files('notebooks/lecture',notes_only=True)['entries'],[])
+        with self.assertRaises(ValueError):self.workspace.files('material',notes_only=True,include_pdf=True)
+        self.assertIn('material/outside.pdf',{entry['path'] for entry in self.workspace.search('.pdf',content_only=True)['entries']})

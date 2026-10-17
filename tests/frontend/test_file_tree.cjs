@@ -11,7 +11,7 @@ const managedWorkbench=false,state={panel:'files',path:'notebooks/root.json'},ed
 const explorer={mode:'notes',query:'',expanded:new Set(['']),directories:new Map(),serial:0,notesDirectory:'notebooks',workspace:'Fixture'};
 const panelIcons={folder:'',notebook:'',file:'',search:''};
 const notebookSessions=new Map(),notebookHistories=new Map();
-let opened=[],previews=[],errors=[],pendingAPI=null,bubbledTreeKeys=0;
+let opened=[],previews=[],errors=[],requestedURLs=[],pendingAPI=null,bubbledTreeKeys=0;
 document.addEventListener('keydown',event=>{if(event.target.closest('#file-tree'))bubbledTreeKeys++;});
 const installWorkspacePanelControls=()=>{},save=async()=>{},toast=message=>errors.push(message);
 const moveAIChatFiles=async()=>{},remapAIChats=()=>{},remapEditorTabs=async()=>{};
@@ -22,7 +22,7 @@ const entries={
  'notebooks/alpha/nested':[{kind:'notebook',path:'notebooks/alpha/nested/deep.json',name:'deep.json',title:'Deep note',slides:1}],
  'notebooks/beta':[]
 };
-const api=async url=>{if(pendingAPI)return pendingAPI(url);const u=new URL(url,'http://fixture');if(u.pathname==='/api/search')return {entries:entries['notebooks/alpha'].filter(e=>e.kind==='notebook')};return {notesDirectory:'notebooks',entries:structuredClone(entries[u.searchParams.get('path')||'']||[])};};
+const api=async url=>{requestedURLs.push(url);if(pendingAPI)return pendingAPI(url);const u=new URL(url,'http://fixture');if(u.pathname==='/api/search')return {entries:u.searchParams.get('q')==='.pdf'?entries[''].filter(e=>e.kind==='pdf'):entries['notebooks/alpha'].filter(e=>e.kind==='notebook')};return {notesDirectory:'notebooks',entries:structuredClone(entries[u.searchParams.get('path')||'']||[])};};
 const previewFile=async path=>previews.push(path);
 const openNotebook=async path=>{opened.push(path);editorTabs.active=path;await revealActiveFile({automatic:true});};
 `;
@@ -91,6 +91,19 @@ const scenarios=`
   entries[''].splice(2,1);entries[''][2].title=oldTitle;entries[''][2].slides=1;await refreshExplorer();
   assert(!row('notebooks/imported.txt')&&row('notebooks/root.json')===original,'existing row replaced on removal');
  });
+ await check('note explorer requests PDF files, renders them and opens them from search',async()=>{
+  const pdf={kind:'pdf',path:'notebooks/paper.pdf',name:'paper.pdf'};entries[''].push(pdf);
+  try{
+   await refreshExplorer();assert(row(pdf.path),'PDF missing from note explorer');
+   let request=new URL(requestedURLs.filter(url=>url.startsWith('/api/files?')).at(-1),'http://fixture');
+   assert(request.searchParams.get('notes')==='1'&&request.searchParams.get('pdf')==='1','note listing did not request PDFs');
+   await row(pdf.path).onclick();assert(previews.at(-1)===pdf.path,'PDF click did not open the document');
+   explorer.query='.pdf';await refreshFileRows();assert(row(pdf.path),'PDF missing from note search');
+   request=new URL(requestedURLs.at(-1),'http://fixture');
+   assert(request.pathname==='/api/search'&&request.searchParams.get('pdf')==='1','note search did not request PDFs');
+   row(pdf.path).focus();await key('Enter');assert(previews.at(-1)===pdf.path,'PDF keyboard opening failed');
+  }finally{entries[''].pop();explorer.query='';await refreshExplorer();}
+ });
  await check('simultaneous directory loads share a single in-flight request',async()=>{
   let release,calls=0;pendingAPI=()=>{calls++;return new Promise(resolve=>release=resolve);};resetFileDirectoryCache();
   const tasks=[loadDirectory(''),loadDirectory(''),loadDirectory('')];
@@ -142,7 +155,7 @@ const scenarios=`
  });
  await check('notes view never expands an active file outside its root',async()=>{
   editorTabs.active='outside/picture.png';explorer.expanded=new Set(['']);await revealActiveFile({automatic:true});
-  assert(!explorer.expanded.has('outside'));await revealActiveFile();assert(errors.at(-1).includes('仅笔记'));
+  assert(!explorer.expanded.has('outside'));await revealActiveFile();assert(errors.at(-1).includes('笔记与 PDF'));
  });
  await check('empty tree is keyboard reachable and refresh errors remain visible',async()=>{
   pendingAPI=async()=>({notesDirectory:'notebooks',entries:[]});resetFileDirectoryCache();await refreshFileRows();
@@ -162,6 +175,6 @@ test('file explorer keyboard, focus, reveal and async refresh in Chrome',t=>{
   assert.equal(result.status,0,result.stderr);
   const match=result.stdout.match(/<pre id="result">([\s\S]*?)<\/pre>/);assert.ok(match,'browser did not report results');
   const results=JSON.parse(match[1].replaceAll('&quot;','"').replaceAll('&gt;','>').replaceAll('&lt;','<').replaceAll('&amp;','&'));
-  assert.deepEqual(results.filter(r=>!r.ok),[]);assert.equal(results.length,19);console.log('Verified '+results.length+' file explorer browser scenarios.');
+  assert.deepEqual(results.filter(r=>!r.ok),[]);assert.equal(results.length,20);console.log('Verified '+results.length+' file explorer browser scenarios.');
  }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
