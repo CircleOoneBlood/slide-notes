@@ -98,8 +98,67 @@ def _desktop_macos(data_home, executable):
     return target
 
 
-def _powershell_string(value):
-    return "'"+str(value).replace("'", "''")+"'"
+def _create_windows_shortcut(target, interpreter, working_directory):
+    """Use the Unicode Shell Link interface with explicit wide-string setters.
+
+    IShellLinkW setters and IPersistFile.Save take wide strings. Calling these
+    native interfaces also keeps file paths out of PowerShell source code.
+    """
+    import ctypes
+    import uuid
+
+    class GUID(ctypes.Structure):
+        _fields_ = [('Data1', ctypes.c_uint32), ('Data2', ctypes.c_uint16),
+                    ('Data3', ctypes.c_uint16), ('Data4', ctypes.c_ubyte * 8)]
+
+    def guid(value):
+        return GUID.from_buffer_copy(uuid.UUID(value).bytes_le)
+
+    def check(result, operation):
+        if result & 0x80000000:
+            raise OSError(f'{operation} failed (HRESULT 0x{result & 0xffffffff:08X})')
+
+    def method(interface, index, *arguments, result=ctypes.c_long):
+        table = ctypes.cast(interface, ctypes.POINTER(ctypes.POINTER(ctypes.c_void_p))).contents
+        return ctypes.WINFUNCTYPE(result, ctypes.c_void_p, *arguments)(table[index])
+
+    ole32 = ctypes.WinDLL('ole32')
+    ole32.CoInitializeEx.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
+    ole32.CoInitializeEx.restype = ctypes.c_long
+    ole32.CoUninitialize.argtypes = []
+    ole32.CoUninitialize.restype = None
+    ole32.CoCreateInstance.argtypes = [ctypes.POINTER(GUID), ctypes.c_void_p,
+                                     ctypes.c_uint32, ctypes.POINTER(GUID),
+                                     ctypes.POINTER(ctypes.c_void_p)]
+    ole32.CoCreateInstance.restype = ctypes.c_long
+    initialized = ole32.CoInitializeEx(None, 2)  # COINIT_APARTMENTTHREADED
+    # An already initialized COM apartment is also usable, but is not ours to close.
+    if (initialized & 0xffffffff) != 0x80010106:  # RPC_E_CHANGED_MODE
+        check(initialized, 'CoInitializeEx')
+    link, persist = ctypes.c_void_p(), ctypes.c_void_p()
+    try:
+        clsid = guid('00021401-0000-0000-c000-000000000046')
+        shell_link_w = guid('000214f9-0000-0000-c000-000000000046')
+        check(ole32.CoCreateInstance(ctypes.byref(clsid), None, 1,
+                                     ctypes.byref(shell_link_w), ctypes.byref(link)),
+              'CoCreateInstance(IShellLinkW)')
+        # Vtable slots include the three inherited IUnknown methods.
+        for slot, value, operation in (
+            (20, interpreter, 'IShellLinkW.SetPath'),
+            (11, '-m slide_notes.launcher', 'IShellLinkW.SetArguments'),
+            (9, working_directory, 'IShellLinkW.SetWorkingDirectory'),
+            (7, 'Slide Notes local workspace', 'IShellLinkW.SetDescription'),
+        ):
+            check(method(link, slot, ctypes.c_wchar_p)(link, str(value)), operation)
+        persist_file = guid('0000010b-0000-0000-c000-000000000046')
+        check(method(link, 0, ctypes.POINTER(GUID), ctypes.POINTER(ctypes.c_void_p))(
+            link, ctypes.byref(persist_file), ctypes.byref(persist)), 'QueryInterface(IPersistFile)')
+        check(method(persist, 6, ctypes.c_wchar_p, ctypes.c_int)(persist, str(target), 1),
+              'IPersistFile.Save')
+    finally:
+        if persist.value: method(persist, 2, result=ctypes.c_ulong)(persist)
+        if link.value: method(link, 2, result=ctypes.c_ulong)(link)
+        if not (initialized & 0x80000000): ole32.CoUninitialize()
 
 
 def _desktop_windows(data_home, executable):
@@ -117,18 +176,8 @@ def _desktop_windows(data_home, executable):
     _owned_text(marker,_DESKTOP_OWNER)
     pythonw=executable.with_name('pythonw.exe')
     interpreter=pythonw if pythonw.is_file() else executable
-    powershell=shutil.which('powershell.exe') or shutil.which('pwsh.exe')
-    if not powershell:
-        raise ValueError('创建 Windows 快捷方式需要 PowerShell')
     base.mkdir(parents=True,exist_ok=True)
-    script=("$ErrorActionPreference = 'Stop'; "
-            "$shell = New-Object -ComObject WScript.Shell; "
-            f'$shortcut = $shell.CreateShortcut({_powershell_string(target)}); '
-            f'$shortcut.TargetPath = {_powershell_string(interpreter)}; '
-            "$shortcut.Arguments = '-m slide_notes.launcher'; "
-            f'$shortcut.WorkingDirectory = {_powershell_string(Path.home())}; '
-            "$shortcut.Description = 'Slide Notes local workspace'; $shortcut.Save()")
-    subprocess.run([powershell,'-NoProfile','-NonInteractive','-Command',script],check=True)
+    _create_windows_shortcut(target,interpreter,Path.home())
     if not target.is_file():
         raise ValueError(f'未能创建 Windows 快捷方式：{target}')
     marker.write_text(_DESKTOP_OWNER+'\n',encoding='utf-8')

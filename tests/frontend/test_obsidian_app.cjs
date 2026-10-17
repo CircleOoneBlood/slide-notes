@@ -430,23 +430,27 @@ with sync_playwright() as playwright:
    const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);const pixels=ctx.getImageData(0,0,img.width,img.height).data;
    const isPurple=(red,green,blue)=>red>200&&red<250&&green>180&&green<245&&blue>245&&blue>red+5&&blue>green+5;
    const starts={};for(const r of rectangles)starts[r.row]=Math.min(starts[r.row]??Infinity,r.x);
-   const measure=narrow=>{const rows={};for(const r of rectangles){const stats=rows[r.row]||={total:0,filled:0,characters:[]};stats.total++;let purple=0,total=0;const scanlines=[];
+   const measure=mode=>{const rows={};for(const r of rectangles){const stats=rows[r.row]||={total:0,filled:0,characters:[]};stats.total++;let purple=0,total=0;const scanlines=[];
     for(let y=Math.ceil(r.y+1);y<Math.floor(r.y+r.h-1);y++){let horizontal=0,width=0;for(let x=Math.ceil(r.x+1);x<Math.floor(r.x+r.w-1);x++){
      const i=(y*img.width+x)*4,red=pixels[i],green=pixels[i+1],blue=pixels[i+2];total++;
-     width++;if(isPurple(red,green,blue)&&(!narrow||x<starts[r.row]+2)){purple++;horizontal++;}
+     const retained=mode==='narrow'?x<starts[r.row]+2:mode==='underline'?y>=Math.floor(r.y+r.h-1)-2:true;
+     width++;if(isPurple(red,green,blue)&&retained){purple++;horizontal++;}
     }scanlines.push(horizontal/width);}
-    // Measure background width above/below the glyph ink. Bold CJK and skinny
-    // Latin glyphs can cover most of their area despite a fully filled range.
-    const background=scanlines.some((fraction,i)=>fraction>=.8&&scanlines[i+1]>=.8);
+    // Require both horizontal width and vertical presence. Font fallback can
+    // make a fully selected CJK glyph's box only 19px high: ink then obscures
+    // adjacent wide scanlines, while background remains visible between strokes.
+    const horizontal=Math.max(...scanlines),vertical=scanlines.filter(fraction=>fraction>0).length/scanlines.length;
+    const background=horizontal>=.8&&vertical>=.5;
     if(background)stats.filled++;
-    stats.characters.push({...r,purple:purple/total,horizontal:Math.max(...scanlines),background});
+    stats.characters.push({...r,purple:purple/total,horizontal,vertical,background});
    }return Object.values(rows).filter(r=>r.total>=5);};
-   return {rows:measure(false),narrowRows:measure(true)};
+   return {rows:measure('full'),narrowRows:measure('narrow'),underlineRows:measure('underline')};
   }""",{'image':base64.b64encode(image).decode(),'rectangles':rectangles})
   if '--screenshot' in sys.argv:Path('/tmp/slide-notes-bellman-wrapped-selection.json').write_text(json.dumps(coverage,ensure_ascii=False),encoding='utf-8')
   assert len(coverage['rows'])>=2,'screenshot reproduction did not wrap across two visual rows'
   assert all(row['filled']>=row['total']*.9 for row in coverage['rows']),'actual range is correct but selected characters lack visible fill on a wrapped row: '+str(coverage['rows'])
   assert all(row['filled']<row['total']*.9 for row in coverage['narrowRows']),'pixel measurement accepted a narrow vertical selection strip'
+  assert all(row['filled']<row['total']*.9 for row in coverage['underlineRows']),'pixel measurement accepted a thin horizontal underline'
   page.mouse.up()
   page.evaluate("pointerFixture.view.contentDOM.addEventListener('copy',event=>{pointerFixture.copied=event.clipboardData.getData('text/plain')},{once:true})")
   page.keyboard.press('Control+c')

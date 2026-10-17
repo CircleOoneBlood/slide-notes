@@ -1,5 +1,6 @@
 """A running API must not make a broken desktop homepage eligible for reuse."""
 import io
+import base64
 import json
 import os
 from pathlib import Path
@@ -8,6 +9,7 @@ import shlex
 import subprocess
 import sys
 import tempfile
+import venv
 from email.message import Message
 import unittest
 from unittest.mock import patch
@@ -113,19 +115,17 @@ class DesktopInstallTests(unittest.TestCase):
             executable.touch()
             executable.with_name('pythonw.exe').touch()
             integration=base/'integration'
-            def save_shortcut(command,check):
-                self.assertTrue(check)
-                self.assertEqual(command[:4],['powershell.exe','-NoProfile','-NonInteractive','-Command'])
-                self.assertIn("O''Brien",command[4])
-                self.assertIn('空间',command[4])
-                self.assertIn('pythonw.exe',command[4])
-                self.assertIn("$shortcut.Arguments = '-m slide_notes.launcher'",command[4])
+            def save_shortcut(target,interpreter,working_directory):
+                self.assertEqual(target,integration/'Slide Notes.lnk')
+                self.assertEqual(interpreter,executable.with_name('pythonw.exe'))
+                self.assertEqual(working_directory,Path.home())
                 (integration/'Slide Notes.lnk').write_bytes(b'fake COM shortcut')
-            with patch('slide_notes.launcher.sys.platform','win32'), patch('slide_notes.launcher.sys.executable',str(executable)), patch('slide_notes.launcher.shutil.which',return_value='powershell.exe'), patch('slide_notes.launcher.subprocess.run',side_effect=save_shortcut):
+            with patch('slide_notes.launcher.sys.platform','win32'), patch('slide_notes.launcher.sys.executable',str(executable)), patch('slide_notes.launcher._create_windows_shortcut',side_effect=save_shortcut), patch('slide_notes.launcher.subprocess.run') as run:
                 target=desktop_install(integration)
                 self.assertEqual(target.parent,integration)
                 self.assertTrue((integration/'Slide Notes.lnk.slide-notes-managed').is_file())
                 self.assertEqual(desktop_install(integration),target)
+                run.assert_not_called()
 
     def test_windows_preserves_unrelated_shortcut_without_running_powershell(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -136,12 +136,42 @@ class DesktopInstallTests(unittest.TestCase):
                 run.assert_not_called()
             self.assertEqual(target.read_bytes(),b'user shortcut')
 
-    @unittest.skipUnless(sys.platform=='win32','requires Windows WScript shortcut integration')
+    @unittest.skipUnless(sys.platform=='win32','requires native Windows Shell Link integration')
     def test_native_windows_shortcut_is_confined_to_custom_root(self):
         with tempfile.TemporaryDirectory() as temporary:
             target=desktop_install(temporary)
             self.assertEqual(target,Path(temporary)/'Slide Notes.lnk')
             self.assertTrue(target.is_file())
+
+    @unittest.skipUnless(sys.platform=='win32','requires native Windows Unicode Shell Link integration')
+    def test_native_windows_shortcut_round_trips_unicode_spaces_and_apostrophe(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            base=Path(temporary)/"安装目录 空间 O'Brien"
+            environment=base/'app'
+            venv.EnvBuilder(with_pip=False).create(environment)
+            executable=environment/'Scripts/python.exe'
+            integration=base/"安装桌面 O'Brien"
+            with patch('slide_notes.launcher.sys.executable',str(executable)):
+                target=desktop_install(integration)
+                self.assertEqual(desktop_install(integration),target)
+            # Read through the independent Shell property store, not the writer
+            # or a script-based target-path setter.
+            quoted=lambda value:"'"+str(value).replace("'","''")+"'"
+            script=("$ErrorActionPreference='Stop'; "
+                    "$shell=New-Object -ComObject Shell.Application; "
+                    f'$folder=$shell.NameSpace({quoted(integration)}); '
+                    "$item=$folder.ParseName('Slide Notes.lnk'); "
+                    "$data=@{target=$item.ExtendedProperty('System.Link.TargetParsingPath'); "
+                    "arguments=$item.ExtendedProperty('System.Link.Arguments')} | ConvertTo-Json -Compress; "
+                    "[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($data))")
+            command=base64.b64encode(script.encode('utf-16-le')).decode('ascii')
+            result=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-EncodedCommand',command],
+                                  capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=30)
+            self.assertEqual(result.returncode,0,result.stderr)
+            properties=json.loads(base64.b64decode(result.stdout.strip()).decode('utf-8'))
+            self.assertEqual(Path(properties['target']).resolve(),executable.with_name('pythonw.exe').resolve())
+            self.assertEqual(properties['arguments'],'-m slide_notes.launcher')
+            self.assertEqual(target.parent,integration)
 
     @unittest.skipIf(sys.platform=='win32','requires POSIX installer')
     def test_source_installer_rejects_unrelated_install_directory_before_pip(self):
