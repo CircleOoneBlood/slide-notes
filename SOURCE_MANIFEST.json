@@ -2,7 +2,7 @@
   "format": 1,
   "files": {
     ".gitattributes": "22fda958be1cbe9504b391e43595333d0e627a868ab139847e579933b55335d1",
-    ".github/workflows/check.yml": "c900206efb655256fc2cd3d32c797d19d66e7e77f8219bcaf0ba46042d18b3ea",
+    ".github/workflows/check.yml": "0101e2f64ea959278287b78bb467cd2610db7fc8eeeb3e7d9ceb098b1e13ecad",
     ".gitignore": "f5b26139393b5075b2c572c27ef12cf4151f1c0a38c549c0f2f1159a521685c3",
     "AGENTS.md": "3f3dbbc48c6e6f69812255293ce2a35bdee44fc43288af958564a98f39b89667",
     "LICENSE": "b417be45a431cb87582df0d76ba79cd14464b5d846e942ef64285a6a0f2bd7d4",
@@ -892,7 +892,7 @@
     "tests/frontend/test_markdown_inline.cjs": "0b85dbf6aa7159923cb512368ee77c53fae61d91c236cafdbca0ad101a7230db",
     "tests/frontend/test_math_links.cjs": "b18814ca157726c8879ec5c3aa97c16e9bfedfee293f30e959f9efce726ad667",
     "tests/frontend/test_note_controls.cjs": "7a0c9ac4fb4b629bc2a34ce2eb86014d9ecc99c459dedc5ad23b574c2a9f7599",
-    "tests/frontend/test_obsidian_app.cjs": "56d2975357870e11a6981eac7ae1da853cfa2562052af6f9e4b4c1e611c5526e",
+    "tests/frontend/test_obsidian_app.cjs": "fe25adc8816de09dcc2eb0c2475175345079e50cf3f4272551635209763bd7bd",
     "tests/frontend/test_obsidian_markdown.cjs": "e6e48c757dcdac5a1f2bba717ec0329d3dcdb909c1f5873de3a772d5ef0f7d78",
     "tests/frontend/test_plot_drag.cjs": "f783fe3d59c1033e5f32dd3d58dae17729eb9fc002ce1fa7c75b09938e8c8f5b"
   },

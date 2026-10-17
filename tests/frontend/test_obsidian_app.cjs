@@ -383,25 +383,39 @@ with sync_playwright() as playwright:
   page.set_viewport_size({'width':1500,'height':1100})
   page.evaluate('source=>{const v=pointerFixture.view;v.dispatch({changes:{from:0,to:v.state.doc.length,insert:source}})}',explanation)
   page.mouse.click(**prose_point('出发',0,0));page.wait_for_timeout(550)
+  expected_from=explanation.index('出发');expected_to=explanation.index('后的最优代价')+6
+  def character_rectangles(first,last):
+   return page.evaluate("""({first,last})=>{
+    const {view,host}=pointerFixture,base=host.getBoundingClientRect(),rectangles=[];
+    const walker=document.createTreeWalker(view.contentDOM,NodeFilter.SHOW_TEXT);let node;
+    while(node=walker.nextNode()){
+     if(node.parentElement.closest('.markdown-preview-block,.markdown-inline-math'))continue;
+     const from=view.posAtDOM(node,0);
+     for(let i=Math.max(0,first-from);i<Math.min(node.length,last-from);i++){
+      if(!/[a-zA-Z\u4e00-\u9fff]/.test(node.textContent[i]))continue;
+      const range=document.createRange();range.setStart(node,i);range.setEnd(node,i+1);const r=range.getBoundingClientRect();
+      if(r.width>2&&r.height>5)rectangles.push({x:r.left-base.left,y:r.top-base.top,w:r.width,h:r.height});
+     }
+    }return rectangles;
+   }""",{'first':first,'last':last})
+  # Font fallback changes CJK character widths across developer machines and
+  # clean Linux runners. Measure the actual DOM ranges, then narrow the viewport
+  # until the intended selection spans two meaningful rows before dragging.
+  measured_rows={}
+  for width in (1500,1350,1200,1050,900,750):
+   page.set_viewport_size({'width':width,'height':1100});page.wait_for_timeout(250)
+   measured_rows={}
+   for rectangle in character_rectangles(expected_from,expected_to):
+    row=round(rectangle['y']/10)*10;measured_rows[row]=measured_rows.get(row,0)+1
+   if sum(count>=5 for count in measured_rows.values())>=2:break
+  assert sum(count>=5 for count in measured_rows.values())>=2,'unable to create a wrapped selection fixture: '+str(measured_rows)
   a=prose_point('出发',0,0);b=prose_point('后的最优代价',0,6)
   page.mouse.move(a['x'],a['y']);page.mouse.down();page.mouse.move(b['x'],b['y'],steps=30)
-  expected_from=explanation.index('出发');expected_to=explanation.index('后的最优代价')+6
   assert page.evaluate('String(window.getSelection())')==explanation[expected_from:expected_to],'screenshot reproduction has incorrect native selection'
   host=page.locator('.cell.markdown-cell').first;image=host.screenshot()
   if '--screenshot' in sys.argv:Path('/tmp/slide-notes-bellman-wrapped-selection.png').write_bytes(image)
-  rectangles=page.evaluate("""()=>{
-   const {view,host}=pointerFixture,sel=view.state.selection.main,base=host.getBoundingClientRect(),rectangles=[];
-   const walker=document.createTreeWalker(view.contentDOM,NodeFilter.SHOW_TEXT);let node;
-   while(node=walker.nextNode()){
-    if(node.parentElement.closest('.markdown-preview-block,.markdown-inline-math'))continue;
-    const from=view.posAtDOM(node,0);
-    for(let i=Math.max(0,sel.from-from);i<Math.min(node.length,sel.to-from);i++){
-     if(!/[a-zA-Z\u4e00-\u9fff]/.test(node.textContent[i]))continue;
-     const range=document.createRange();range.setStart(node,i);range.setEnd(node,i+1);const r=range.getBoundingClientRect();
-     if(r.width>2&&r.height>5)rectangles.push({x:r.left-base.left,y:r.top-base.top,w:r.width,h:r.height});
-    }
-   }return rectangles;
-  }""")
+  selected=page.evaluate('({from:pointerFixture.view.state.selection.main.from,to:pointerFixture.view.state.selection.main.to})')
+  rectangles=character_rectangles(selected['from'],selected['to'])
   coverage=page.evaluate("""async ({image,rectangles})=>{
    const img=new Image();img.src='data:image/png;base64,'+image;await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;
    const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);const pixels=ctx.getImageData(0,0,img.width,img.height).data,rows={};
@@ -415,6 +429,9 @@ with sync_playwright() as playwright:
   assert len(coverage)>=2,'screenshot reproduction did not wrap across two visual rows'
   assert all(row['filled']>=row['total']*.9 for row in coverage),'actual range is correct but selected characters lack visible fill on a wrapped row: '+str(coverage)
   page.mouse.up()
+  page.evaluate("pointerFixture.view.contentDOM.addEventListener('copy',event=>{pointerFixture.copied=event.clipboardData.getData('text/plain')},{once:true})")
+  page.keyboard.press('Control+c')
+  assert page.evaluate('pointerFixture.copied')==explanation[expected_from:expected_to],'wrapped selection copy differs from source'
   result['checks'].append('current Bellman screenshot: selected letters and Chinese characters are visibly filled across every wrapped row, not only inside a narrow vertical strip')
   assert not pointer_errors,pointer_errors
   page.evaluate('delete window.pointerFixture')

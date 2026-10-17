@@ -9,8 +9,6 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-24.04
-    outputs:
-      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -29,7 +27,7 @@ jobs:
           fi
           version=$(python scripts/build_release.py --check-version "${tag_arguments[@]}")
           echo "version=$version" >> "$GITHUB_OUTPUT"
-      - run: sudo apt-get update && sudo apt-get install -y poppler-utils bubblewrap
+      - run: sudo apt-get update && sudo apt-get install -y poppler-utils bubblewrap fonts-noto-cjk
       - name: Enable and verify isolated command execution on the CI runner
         run: |
           # Ubuntu's userns restriction is relaxed only on this disposable CI
@@ -54,6 +52,30 @@ jobs:
       - run: .venv/bin/python -m unittest discover -s tests/backend -p 'test_*.py'
       - run: .venv/bin/python -m unittest discover -s scripts -p 'test_*.py'
       - run: node --test --test-concurrency=2 tests/frontend/test_*.cjs
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify project and release tag versions
+        shell: bash
+        run: |
+          tag_arguments=()
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag_arguments=(--tag "$GITHUB_REF_NAME")
+          fi
+          python scripts/build_release.py --check-version "${tag_arguments[@]}"
+      - name: Install build dependencies and rebuild locked frontend assets
+        run: |
+          python -m pip install --disable-pip-version-check build==1.6.1
+          npm ci --prefix frontend
+          npm run check --prefix frontend
+          npm run build --prefix frontend
       - name: Build reviewed release assets
         shell: bash
         run: |
@@ -61,14 +83,15 @@ jobs:
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             tag_arguments=(--tag "$GITHUB_REF_NAME")
           fi
-          .venv/bin/python scripts/build_release.py --output "$RUNNER_TEMP/slide-notes-release" "${tag_arguments[@]}"
+          python scripts/build_release.py --output "$RUNNER_TEMP/slide-notes-release" "${tag_arguments[@]}"
       - uses: actions/upload-artifact@v4
         with:
           name: slide-notes-release
           path: ${{ runner.temp }}/slide-notes-release/
+          include-hidden-files: true
           if-no-files-found: error
   smoke:
-    needs: test
+    needs: build
     timeout-minutes: 25
     strategy:
       fail-fast: false
