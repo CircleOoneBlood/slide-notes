@@ -42,7 +42,7 @@ for source, target in [('dompurify/dist/purify.min.js','purify.js'),('@dagrejs/d
 shutil.copytree(ROOT/'node_modules/katex/dist',STATIC/'vendor/katex',dirs_exist_ok=True)
 for package, name in [('dompurify','dompurify'),('@dagrejs/dagre','dagre'),('katex','katex')]:
     source=ROOT/'node_modules'/package
-    licenses=list(source.glob('LICENSE*'))
+    licenses=sorted(source.glob('LICENSE*'))
     if licenses: shutil.copyfile(licenses[0], STATIC/'licenses'/f'{name}.txt')
 
 # PDF.js runs fully offline, including CJK maps, fallback fonts and image decoders.

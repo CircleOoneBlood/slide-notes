@@ -16,7 +16,7 @@ from http.server import ThreadingHTTPServer
 from slide_notes import __version__
 from slide_notes.application import Application
 from slide_notes.web.server import handler_factory
-from slide_notes.paths import STATIC_ROOT
+from slide_notes.paths import STATIC_ROOT, configure_text_streams
 
 
 def reusable_server(port):
@@ -151,6 +151,7 @@ def desktop_install(data_home=None):
 
 
 def main():
+    configure_text_streams()
     parser=argparse.ArgumentParser(description='Slide Notes · 本地工作区与交互笔记')
     parser.add_argument('workspace',nargs='?',help='工作区路径；不指定则打开首页')
     parser.add_argument('action',nargs='?',help=argparse.SUPPRESS)

@@ -10,6 +10,21 @@ TEMPLATE_PATH = PACKAGE_ROOT / 'example.json'
 KERNEL_WORKER = PACKAGE_ROOT / 'notebook/kernel_worker.py'
 
 
+def configure_text_streams(*, include_stdin=False):
+    """Keep CLI text UTF-8 even for Windows pipes and isolated Python (-I).
+
+    Python ignores PYTHONIOENCODING in isolated mode, and redirected Windows
+    streams otherwise use the legacy system code page. StringIO test streams
+    and pythonw's absent console streams intentionally remain untouched.
+    """
+    names=('stdout','stderr','stdin') if include_stdin else ('stdout','stderr')
+    for name in names:
+        stream=getattr(sys,name,None)
+        reconfigure=getattr(stream,'reconfigure',None)
+        if callable(reconfigure):
+            reconfigure(encoding='utf-8',errors='strict' if name=='stdin' else 'backslashreplace')
+
+
 def environment_python(directory, platform=None):
     """A workspace venv uses the interpreter layout of the running platform."""
     return Path(directory) / ('Scripts/python.exe' if (platform or sys.platform) == 'win32' else 'bin/python')

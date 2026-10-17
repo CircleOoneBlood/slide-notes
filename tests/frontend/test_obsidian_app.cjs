@@ -382,6 +382,7 @@ with sync_playwright() as playwright:
   explanation=cell5.split('iLQR 不直接求解')[0].rstrip()
   page.set_viewport_size({'width':1500,'height':1100})
   page.evaluate('source=>{const v=pointerFixture.view;v.dispatch({changes:{from:0,to:v.state.doc.length,insert:source}})}',explanation)
+  if '--noto' in sys.argv:page.evaluate("pointerFixture.view.dom.style.setProperty('--md-font-text', '\"Noto Sans CJK SC\"')")
   page.mouse.click(**prose_point('出发',0,0));page.wait_for_timeout(550)
   expected_from=explanation.index('出发');expected_to=explanation.index('后的最优代价')+6
   def character_rectangles(first,last):
@@ -394,8 +395,16 @@ with sync_playwright() as playwright:
      for(let i=Math.max(0,first-from);i<Math.min(node.length,last-from);i++){
       if(!/[a-zA-Z\u4e00-\u9fff]/.test(node.textContent[i]))continue;
       const range=document.createRange();range.setStart(node,i);range.setEnd(node,i+1);const r=range.getBoundingClientRect();
-      if(r.width>2&&r.height>5)rectangles.push({x:r.left-base.left,y:r.top-base.top,w:r.width,h:r.height});
+      if(r.width>2&&r.height>5)rectangles.push({x:r.left-base.left,y:r.top-base.top,w:r.width,h:r.height,char:node.textContent[i],from:from+i,font:getComputedStyle(node.parentElement).font,classes:node.parentElement.className});
      }
+    }
+    // Inline TeX has a smaller font and a different glyph-box top, while
+    // sharing the prose baseline. Cluster vertical centers instead of tops.
+    const rows=[];
+    for(const r of rectangles){const center=r.y+r.h/2;
+     let row=rows.find(row=>Math.abs(row.center-center)<Math.min(row.height,r.h)*.45);
+     if(!row){row={center,height:r.h,count:0};rows.push(row);}
+     row.center=(row.center*row.count+center)/(row.count+1);row.count++;row.height=Math.min(row.height,r.h);r.row=rows.indexOf(row);
     }return rectangles;
    }""",{'first':first,'last':last})
   # Font fallback changes CJK character widths across developer machines and
@@ -406,7 +415,7 @@ with sync_playwright() as playwright:
    page.set_viewport_size({'width':width,'height':1100});page.wait_for_timeout(250)
    measured_rows={}
    for rectangle in character_rectangles(expected_from,expected_to):
-    row=round(rectangle['y']/10)*10;measured_rows[row]=measured_rows.get(row,0)+1
+    row=rectangle['row'];measured_rows[row]=measured_rows.get(row,0)+1
    if sum(count>=5 for count in measured_rows.values())>=2:break
   assert sum(count>=5 for count in measured_rows.values())>=2,'unable to create a wrapped selection fixture: '+str(measured_rows)
   a=prose_point('出发',0,0);b=prose_point('后的最优代价',0,6)
@@ -418,16 +427,26 @@ with sync_playwright() as playwright:
   rectangles=character_rectangles(selected['from'],selected['to'])
   coverage=page.evaluate("""async ({image,rectangles})=>{
    const img=new Image();img.src='data:image/png;base64,'+image;await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;
-   const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);const pixels=ctx.getImageData(0,0,img.width,img.height).data,rows={};
-   for(const r of rectangles){const row=Math.round(r.y/10)*10;const stats=rows[row]||={total:0,filled:0};stats.total++;let purple=0,total=0;
-    for(let y=Math.ceil(r.y+1);y<Math.floor(r.y+r.h-1);y++)for(let x=Math.ceil(r.x+1);x<Math.floor(r.x+r.w-1);x++){
+   const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);const pixels=ctx.getImageData(0,0,img.width,img.height).data;
+   const isPurple=(red,green,blue)=>red>200&&red<250&&green>180&&green<245&&blue>245&&blue>red+5&&blue>green+5;
+   const starts={};for(const r of rectangles)starts[r.row]=Math.min(starts[r.row]??Infinity,r.x);
+   const measure=narrow=>{const rows={};for(const r of rectangles){const stats=rows[r.row]||={total:0,filled:0,characters:[]};stats.total++;let purple=0,total=0;const scanlines=[];
+    for(let y=Math.ceil(r.y+1);y<Math.floor(r.y+r.h-1);y++){let horizontal=0,width=0;for(let x=Math.ceil(r.x+1);x<Math.floor(r.x+r.w-1);x++){
      const i=(y*img.width+x)*4,red=pixels[i],green=pixels[i+1],blue=pixels[i+2];total++;
-     if(red>200&&red<250&&green>180&&green<245&&blue>245&&blue>red+5&&blue>green+5)purple++;
-    }if(purple>total*.3)stats.filled++;
-   }return Object.values(rows).filter(r=>r.total>=5);
+     width++;if(isPurple(red,green,blue)&&(!narrow||x<starts[r.row]+2)){purple++;horizontal++;}
+    }scanlines.push(horizontal/width);}
+    // Measure background width above/below the glyph ink. Bold CJK and skinny
+    // Latin glyphs can cover most of their area despite a fully filled range.
+    const background=scanlines.some((fraction,i)=>fraction>=.8&&scanlines[i+1]>=.8);
+    if(background)stats.filled++;
+    stats.characters.push({...r,purple:purple/total,horizontal:Math.max(...scanlines),background});
+   }return Object.values(rows).filter(r=>r.total>=5);};
+   return {rows:measure(false),narrowRows:measure(true)};
   }""",{'image':base64.b64encode(image).decode(),'rectangles':rectangles})
-  assert len(coverage)>=2,'screenshot reproduction did not wrap across two visual rows'
-  assert all(row['filled']>=row['total']*.9 for row in coverage),'actual range is correct but selected characters lack visible fill on a wrapped row: '+str(coverage)
+  if '--screenshot' in sys.argv:Path('/tmp/slide-notes-bellman-wrapped-selection.json').write_text(json.dumps(coverage,ensure_ascii=False),encoding='utf-8')
+  assert len(coverage['rows'])>=2,'screenshot reproduction did not wrap across two visual rows'
+  assert all(row['filled']>=row['total']*.9 for row in coverage['rows']),'actual range is correct but selected characters lack visible fill on a wrapped row: '+str(coverage['rows'])
+  assert all(row['filled']<row['total']*.9 for row in coverage['narrowRows']),'pixel measurement accepted a narrow vertical selection strip'
   page.mouse.up()
   page.evaluate("pointerFixture.view.contentDOM.addEventListener('copy',event=>{pointerFixture.copied=event.clipboardData.getData('text/plain')},{once:true})")
   page.keyboard.press('Control+c')
@@ -438,7 +457,7 @@ with sync_playwright() as playwright:
  print(json.dumps(result))
  browser.close()
 `;
-  const run=spawnSync(testPaths.PYTHON,['-c',driver,info.url,process.env.CHROME_BIN||'/usr/bin/google-chrome',path.join(testPaths.FIXTURES_ROOT,'ilqr-cell5.md'),...(process.env.TEST_SCREENSHOT?['--screenshot']:[])],{encoding:'utf8',timeout:45000,maxBuffer:1024*1024});
+  const run=spawnSync(testPaths.PYTHON,['-c',driver,info.url,process.env.CHROME_BIN||'/usr/bin/google-chrome',path.join(testPaths.FIXTURES_ROOT,'ilqr-cell5.md'),...(process.env.TEST_SCREENSHOT?['--screenshot']:[]),...(process.env.TEST_CJK_FONT?['--noto']:[])],{encoding:'utf8',timeout:45000,maxBuffer:1024*1024});
   assert.equal(run.status,0,run.stderr);let result;try{result=JSON.parse(run.stdout.trim());}catch{throw Error('incomplete app browser: '+run.stdout+' '+error);}
   assert.equal(result.ok,true,result.error);assert(result.checks.length>=14);console.log('Verified '+result.checks.length+' full workspace Markdown checks.');
  }finally{proc.stdin.end();await new Promise(resolve=>{proc.once('exit',resolve);setTimeout(()=>{proc.kill('SIGTERM');resolve();},3000).unref();});fs.rmSync(temp,{recursive:true,force:true});}

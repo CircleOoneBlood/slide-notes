@@ -150,6 +150,7 @@
     "tests/backend/test_pdf_ai_context.py",
     "tests/backend/test_runtime.py",
     "tests/backend/test_storage.py",
+    "tests/backend/test_text_streams.py",
     "tests/backend/test_workbench_response.py",
     "tests/backend/test_worker_bootstrap.py",
     "tests/backend/test_workspace.py",

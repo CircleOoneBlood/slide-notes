@@ -96,7 +96,8 @@ class CrossPlatformRuntimeTests(unittest.TestCase):
                 values = {item['name']: item['value'] for item in response['state']['variables']}
                 self.assertEqual(values['答案'], '43')
                 self.assertEqual(values['secret_present'], 'False')
-                self.assertEqual(values['working_directory'], repr(str(root)))
+                import ast
+                self.assertEqual(Path(ast.literal_eval(values['working_directory'])).resolve(), root.resolve())
                 self.assertEqual(response['state']['outputs']['cell']['stdout'], '你好\n')
             finally:
                 connection.close()

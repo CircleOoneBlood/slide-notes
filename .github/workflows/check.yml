@@ -51,7 +51,18 @@ jobs:
           npm run build --prefix frontend
       - run: .venv/bin/python -m unittest discover -s tests/backend -p 'test_*.py'
       - run: .venv/bin/python -m unittest discover -s scripts -p 'test_*.py'
-      - run: node --test --test-concurrency=2 tests/frontend/test_*.cjs
+      - name: Verify frontend behavior and wrapped selection rendering
+        env:
+          TEST_SCREENSHOT: '1'
+        run: node --test --test-concurrency=2 tests/frontend/test_*.cjs
+      - name: Save selection rendering diagnostics after a failed check
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: markdown-selection-diagnostic
+          path: /tmp/slide-notes-bellman-wrapped-selection.png
+          if-no-files-found: ignore
+          retention-days: 7
   build:
     runs-on: ubuntu-24.04
     steps:

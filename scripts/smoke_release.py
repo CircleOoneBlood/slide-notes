@@ -41,7 +41,9 @@ def verify_installed(expected_version):
         base = Path(temporary)
         os.environ.update(clean_environment(base))
         for entry in ("slide_notes.launcher", "slide_notes.cli"):
-            subprocess.run([sys.executable, "-I", "-m", entry, "--help"], check=True, capture_output=True, timeout=30)
+            help_result=subprocess.run([sys.executable, "-I", "-m", entry, "--help"], capture_output=True, timeout=30)
+            if help_result.returncode:
+                raise AssertionError(f"{entry} --help failed ({help_result.returncode}):\n" + help_result.stderr.decode("utf-8",errors="replace"))
         desktop = Path(desktop_install(data_home=base / "desktop"))
         assert desktop.exists() and desktop.resolve().is_relative_to(base.resolve()), "Desktop launcher escaped temporary directory"
         app = Application(config_home=base / "config")
@@ -123,7 +125,11 @@ def verify_installed(expected_version):
 def installed_checks(python, info, base, runtime_tests, launcher_tests):
     subprocess.run([str(python), "-I", str(Path(__file__).resolve()), "--verify-installed", info["version"]],
                    check=True, timeout=180, env=clean_environment(base), cwd=base)
-    for selected in (runtime_tests, launcher_tests):
+    selected_tests=[runtime_tests,launcher_tests]
+    if runtime_tests:
+        text_tests=Path(runtime_tests).resolve().with_name('test_text_streams.py')
+        if text_tests.is_file():selected_tests.append(text_tests)
+    for selected in selected_tests:
         if selected:
             tests = Path(selected).resolve()
             subprocess.run([str(python), "-I", "-m", "unittest", "discover", "-s", str(tests.parent), "-p", tests.name],

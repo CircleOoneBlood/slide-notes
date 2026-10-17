@@ -12,6 +12,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlparse
 from urllib.request import Request, build_opener, ProxyHandler, HTTPRedirectHandler
 import uuid
+from slide_notes.paths import configure_text_streams
 
 
 class CLIError(Exception):
@@ -405,6 +406,7 @@ def dispatch(args):
 
 
 def main(argv=None):
+    configure_text_streams(include_stdin=True)
     try:
         args = parser().parse_args(argv)
         result, code = dispatch(args)
