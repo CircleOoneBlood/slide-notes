@@ -1,0 +1,46 @@
+[
+  {
+    "op": "slide.add",
+    "id": "agentdemo",
+    "name": "函数实验"
+  },
+  {
+    "op": "cell.add",
+    "slide": "agentdemo",
+    "id": "agentsetup",
+    "kind": "python",
+    "display": "skip",
+    "source": "import numpy as np\nimport plotly.graph_objects as go\n\ndef f(x1, x2):\n    return x1**2 + x2**2"
+  },
+  {
+    "op": "cell.add",
+    "slide": "agentdemo",
+    "id": "agentintro",
+    "kind": "markdown",
+    "source": "## 一个函数，一张曲面\n\n$f(x_1,x_2)=x_1^2+x_2^2$\n\n拖动右侧滑杆，观察曲面上的点。",
+    "layout": {
+      "row": "agentrow",
+      "x": 0,
+      "width": 40
+    }
+  },
+  {
+    "op": "cell.add",
+    "slide": "agentdemo",
+    "id": "agentparams",
+    "kind": "python",
+    "source": "x1 = note.slider(\"x₁\", -2, 2, step=0.05, value=0.8, key=\"x1\")\nx2 = note.slider(\"x₂\", -2, 2, step=0.05, value=-0.6, key=\"x2\")\nnote.markdown(f\"当前高度：**{f(x1, x2):.3f}**\")",
+    "layout": {
+      "row": "agentrow",
+      "x": 40,
+      "width": 60
+    }
+  },
+  {
+    "op": "cell.add",
+    "slide": "agentdemo",
+    "id": "agentsurface",
+    "kind": "python",
+    "source": "_axis = np.linspace(-2, 2, 31)\n_x, _y = np.meshgrid(_axis, _axis)\n_fig = go.Figure([\n    go.Surface(x=_x, y=_y, z=f(_x, _y), colorscale=\"Blues\", opacity=0.8, showscale=False),\n    go.Scatter3d(x=[x1], y=[x2], z=[f(x1, x2)], mode=\"markers\", marker=dict(size=7, color=\"#e65a4f\")),\n])\n_fig.update_layout(height=450, margin=dict(l=0, r=0, t=15, b=0), uirevision=\"agentdemo\", scene=dict(xaxis_title=\"x₁\", yaxis_title=\"x₂\", zaxis_title=\"f\"))\n_fig"
+  }
+]

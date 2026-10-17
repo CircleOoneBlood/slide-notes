@@ -1,0 +1,113 @@
+name: checks
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify project and release tag versions
+        id: version
+        shell: bash
+        run: |
+          tag_arguments=()
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag_arguments=(--tag "$GITHUB_REF_NAME")
+          fi
+          version=$(python scripts/build_release.py --check-version "${tag_arguments[@]}")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - run: sudo apt-get update && sudo apt-get install -y poppler-utils bubblewrap
+      - name: Install development dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install -e '.[dev]'
+          npm ci --prefix frontend
+          test -x /usr/bin/google-chrome
+      - name: Check and build frontend
+        run: |
+          npm run check --prefix frontend
+          npm run build --prefix frontend
+      - run: .venv/bin/python -m unittest discover -s tests/backend -p 'test_*.py'
+      - run: .venv/bin/python -m unittest discover -s scripts -p 'test_*.py'
+      - run: node --test --test-concurrency=2 tests/frontend/test_*.cjs
+      - name: Build reviewed release assets
+        shell: bash
+        run: |
+          tag_arguments=()
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag_arguments=(--tag "$GITHUB_REF_NAME")
+          fi
+          .venv/bin/python scripts/build_release.py --output "$RUNNER_TEMP/slide-notes-release" "${tag_arguments[@]}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: slide-notes-release
+          path: ${{ runner.temp }}/slide-notes-release/
+          if-no-files-found: error
+  smoke:
+    needs: test
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: slide-notes-release
+          path: ${{ runner.temp }}/slide-notes-release
+      - name: Verify wheel and native source installer in temporary directories
+        shell: bash
+        run: python scripts/smoke_release.py --artifacts "$RUNNER_TEMP/slide-notes-release" --runtime-tests tests/backend/test_cross_platform_runtime.py --launcher-tests tests/backend/test_launcher.py
+  release:
+    needs: [test, smoke]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: slide-notes-release
+          path: ${{ runner.temp }}/slide-notes-release
+      - name: Publish verified GitHub Release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PYCODE'
+          import os, subprocess, sys
+          from pathlib import Path
+          sys.path.insert(0, 'scripts')
+          from build_release import project_version, validate_artifacts
+          assets = Path(os.environ['RUNNER_TEMP']) / 'slide-notes-release'
+          info = validate_artifacts(assets)
+          version = project_version(tag=os.environ['GITHUB_REF_NAME'])
+          if info['version'] != version:
+              raise SystemExit('Downloaded release version does not match the tag')
+          subprocess.run(['gh', 'release', 'create', os.environ['GITHUB_REF_NAME'],
+              '--repo', os.environ['GITHUB_REPOSITORY'], '--verify-tag',
+              '--title', 'Slide Notes ' + version,
+              '--notes-file', str(assets / 'RELEASE_NOTES.md'), '--',
+              *(str(assets / relative) for relative in info['uploadAssets'])], check=True)
+          PYCODE

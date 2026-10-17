@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+project_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+if [[ ! -x "$project_dir/.venv/bin/python" ]]; then
+    printf '请先安装依赖：python3 -m venv .venv && .venv/bin/python -m pip install -e ".[dev]"\n' >&2
+    exit 1
+fi
+export PYTHONPATH="$project_dir/src${PYTHONPATH:+:$PYTHONPATH}"
+exec "$project_dir/.venv/bin/python" -m slide_notes.cli "$@"

@@ -1,0 +1,34 @@
+/* Note's response typography. Claude web font metrics could not be measured:
+   these local serif/sans/mono stacks are explicit reconstruction choices. */
+.ai-response-markdown {
+ --ai-response-serif:Georgia,"Noto Serif CJK SC","Songti SC",SimSun,serif;
+ --ai-response-mono:"Fira Mono",ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+ --md-font-text:var(--ai-response-serif);--md-font-code:var(--ai-response-mono);
+ --md-heading-spacing:1.6rem;--md-paragraph-spacing:.9rem;--md-accent:#b56546;
+ --md-text:#312f2b;--md-code-bg:#efede7;
+ white-space:normal;overflow-wrap:anywhere;
+}
+.ai-note-interface .ai-message.assistant .ai-response-markdown,.ai-response-markdown {
+ font-family:var(--ai-response-serif);font-size:16px;line-height:1.65;font-weight:400;color:var(--md-text);
+}
+.ai-response-markdown :is(p,li,blockquote,td,th){font-family:inherit;font-size:inherit;line-height:inherit;color:inherit;}
+.ai-response-markdown p{margin:.9em 0;}
+.ai-response-markdown>:first-child{margin-top:0;}
+.ai-response-markdown>:last-child{margin-bottom:0;}
+.ai-response-markdown :is(h1,h2,h3,h4,h5,h6){font-family:inherit;font-weight:600;line-height:1.35;margin:1.6em 0 .6em;}
+.ai-response-markdown h1{font-size:1.5em}.ai-response-markdown h2{font-size:1.25em}.ai-response-markdown h3{font-size:1.125em}.ai-response-markdown :is(h4,h5,h6){font-size:1em}
+.ai-note-interface .ai-message-body.ai-response-markdown :is(code,pre){font-family:var(--ai-response-mono);font-size:13px;line-height:1.55;}
+.ai-note-interface .ai-message-body.ai-response-markdown pre{background:var(--md-code-bg);color:var(--md-text);padding:14px 16px;border:1px solid #e5e0d8;border-radius:8px;white-space:pre;overflow-x:auto;max-width:100%;}
+.ai-response-markdown :not(pre)>code{padding:2px 5px;border-radius:4px;background:#eae6de;}
+.ai-response-markdown :is(ul,ol){margin:.8em 0;padding-inline-start:1.6em;}
+.ai-response-markdown li{margin:.3em 0;}
+.ai-response-markdown li>p{margin:.35em 0;}
+.ai-response-markdown blockquote{border-inline-start:2px solid #cbbca9;margin:1em 0;padding-inline-start:1em;color:#625b53;}
+.ai-response-markdown .table-wrapper{max-width:100%;overflow:auto;}
+.ai-response-markdown table{width:auto;max-width:100%;font-size:14px;}
+.ai-response-markdown :is(th,td){padding:7px 10px;border:1px solid #dcd5cb;}
+.ai-response-markdown .math-block{margin:1em 0;text-align:center;}
+.ai-response-markdown .ai-math-pending{font:12px/1.6 var(--ui-font,sans-serif);color:#9b8776;white-space:pre-wrap;}
+.ai-response-markdown[data-streaming="true"]::after{content:"";display:inline-block;width:5px;height:13px;margin-inline-start:3px;vertical-align:-1px;border-radius:2px;background:#bd8769;opacity:.65;animation:ai-response-cursor 1s ease-in-out infinite;}
+@keyframes ai-response-cursor{50%{opacity:.2}}
+@media(prefers-reduced-motion:reduce){.ai-response-markdown[data-streaming="true"]::after{animation:none}}

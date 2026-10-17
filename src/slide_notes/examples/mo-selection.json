@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "title": "mo · 选点与下游分析",
+  "slides": [
+    {
+      "id": "demo",
+      "name": "mo · 选点与下游分析",
+      "cells": [
+        {
+          "id": "mochart",
+          "kind": "code",
+          "display": "normal",
+          "showCode": false,
+          "source": "import marimo as mo\nimport plotly.graph_objects as go\n\n_fig = go.Figure(go.Scatter(x=[1,2,3,4,5,6], y=[2,5,3,8,6,9], mode=\"markers\", marker=dict(size=14,color=\"#4f86ec\")))\n_fig.update_layout(title=\"点击一个点，或用框选 / 套索选择多个点\", dragmode=\"select\", height=420, margin=dict(l=35,r=15,t=55,b=35))\nchart = mo.ui.plotly(_fig)\nchart",
+          "layout": {
+            "row": "selectRow",
+            "x": 0,
+            "width": 65
+          }
+        },
+        {
+          "id": "moanalysis",
+          "kind": "code",
+          "display": "normal",
+          "showCode": false,
+          "source": "selected = chart.value\n_lines = [\"## 下游分析\", f\"已选择 **{len(selected)}** 个点。\"]\nif selected:\n    _lines.extend([\"\", \"| x | y |\", \"| --- | --- |\"])\n    _lines.extend(f\"| {_point.get('x', '')} | {_point.get('y', '')} |\" for _point in selected)\nelse:\n    _lines.append(\"\\n请在左侧图像中选择。\")\nmo.md(\"\\n\\n\".join(_lines[:2]) + \"\\n\" + \"\\n\".join(_lines[2:]))",
+          "layout": {
+            "row": "selectRow",
+            "x": 65,
+            "width": 35
+          }
+        }
+      ]
+    }
+  ]
+}

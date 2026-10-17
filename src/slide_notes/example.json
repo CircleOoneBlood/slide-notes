@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "title": "函数，成为一张曲面",
+  "slides": [
+    {
+      "id": "concept",
+      "name": "一个函数，一张曲面",
+      "cells": [
+        {
+          "id": "intro",
+          "kind": "markdown",
+          "display": "normal",
+          "showCode": false,
+          "source": "## 从两个输入，到一个高度\n\n一元函数把一个输入映射成一个数。二元函数接收两个输入：把它们当作平面上的坐标，把输出当作高度，就得到一张曲面。\n\n$$f(x_1, x_2) = x_1^2 + x_2^2$$\n\n在这本笔记中，我们先理解公式，再走到曲面上，亲手移动一个点。\n\n> 一页是一个想法；多个 cell 一起把它讲清楚。"
+        },
+        {
+          "id": "introstep",
+          "kind": "markdown",
+          "display": "fragment",
+          "showCode": false,
+          "source": "### 点与曲面的关系\n\n给定一对输入 $(x_1,x_2)$，曲面上就有一个对应的点：\n\n$$P = \\left(x_1, x_2, f(x_1,x_2)\\right)$$\n\n放映时按右箭头，这一段才会出现。这是一个 **Fragment**。"
+        },
+        {
+          "id": "imports",
+          "kind": "code",
+          "display": "skip",
+          "showCode": false,
+          "source": "import numpy as np\nimport plotly.graph_objects as go"
+        },
+        {
+          "id": "function",
+          "kind": "code",
+          "display": "skip",
+          "showCode": false,
+          "source": "# 修改函数后运行，下游网格和图形会一起更新。\ndef f(x1, x2):\n    return x1**2 + x2**2\n\naxis = np.linspace(-2, 2, 41)\ngrid_x1, grid_x2 = np.meshgrid(axis, axis)\nsurface_z = f(grid_x1, grid_x2)"
+        }
+      ]
+    },
+    {
+      "id": "derivation",
+      "name": "沿着一个方向变化",
+      "cells": [
+        {
+          "id": "derivationtext",
+          "kind": "markdown",
+          "display": "normal",
+          "showCode": false,
+          "source": "## 固定一个输入，会发生什么？\n\n先固定 $x_2=b$，只改变 $x_1$。这相当于用一个竖直平面切开曲面，留下的是一条抛物线。\n\n$$g(x_1)=f(x_1,b)=x_1^2+b^2$$\n\n当 $b=0$，切线所在的曲线经过原点；当 $b$ 远离零，整条曲线向上移动。"
+        },
+        {
+          "id": "gradient",
+          "kind": "markdown",
+          "display": "fragment",
+          "showCode": false,
+          "source": "### 局部的变化率\n\n两个方向上的变化率分别由偏导数描述：\n\n$$\\frac{\\partial f}{\\partial x_1}=2x_1,\\qquad \\frac{\\partial f}{\\partial x_2}=2x_2$$\n\n把两个方向的变化率放在一起，就得到梯度：\n\n$$\\nabla f(x_1,x_2) = (2x_1,2x_2)$$\n\n离原点越远，曲面越陡。梯度指向高度增加最快的方向。"
+        },
+        {
+          "id": "experimentprompt",
+          "kind": "markdown",
+          "display": "fragment",
+          "showCode": false,
+          "source": "### 带着问题去实验\n\n1. 同时把 $x_1$ 和 $x_2$ 移向零，点的高度如何变化？\n2. 让 $x_1$ 从负数变为绝对值相同的正数，高度会改变吗？\n3. 如果把函数改成 $x_1^2-x_2^2$，曲面会是什么形状？\n\n下一页试试看。"
+        }
+      ]
+    },
+    {
+      "id": "experiment",
+      "name": "在曲面上移动一个点",
+      "cells": [
+        {
+          "id": "labintro",
+          "kind": "markdown",
+          "display": "normal",
+          "showCode": false,
+          "source": "拖动两个参数，观察点 $P$ 的位置与高度。也可以拖动曲面旋转视角。"
+        },
+        {
+          "id": "parameters",
+          "kind": "code",
+          "display": "normal",
+          "showCode": false,
+          "source": "# 滑杆会自动显示在此 cell 的输出中。\nx1 = note.slider(\"x₁\", -2, 2, step=0.05, value=0.8, key=\"x1\")\nx2 = note.slider(\"x₂\", -2, 2, step=0.05, value=-0.6, key=\"x2\")"
+        },
+        {
+          "id": "point",
+          "kind": "code",
+          "display": "normal",
+          "showCode": false,
+          "source": "height = float(f(x1, x2))\nnote.markdown(f\"**当前点** · P = ({x1:.2f}, {x2:.2f}, {height:.3f})\")"
+        },
+        {
+          "id": "chart",
+          "kind": "code",
+          "display": "normal",
+          "showCode": false,
+          "source": "figure = go.Figure([\n    go.Surface(x=grid_x1, y=grid_x2, z=surface_z,\n        colorscale=[[0, \"#edf6ff\"], [0.45, \"#b5d6f8\"], [1, \"#5b91d0\"]],\n        opacity=0.72, showscale=False, hoverinfo=\"skip\"),\n    go.Scatter3d(x=[x1, x1], y=[x2, x2], z=[0, height],\n        mode=\"lines\", line=dict(color=\"#7197c9\", width=4, dash=\"dash\"),\n        showlegend=False, hoverinfo=\"skip\"),\n    go.Scatter3d(x=[x1], y=[x2], z=[height], mode=\"markers\",\n        marker=dict(color=\"#1e4eb9\", size=7, line=dict(color=\"white\", width=2)),\n        showlegend=False, hovertemplate=\"P (%{x:.2f}, %{y:.2f}, %{z:.3f})<extra></extra>\"),\n])\nfigure.update_layout(height=460, margin=dict(l=0,r=0,t=5,b=0),\n    paper_bgcolor=\"white\", uirevision=\"surface\", font=dict(color=\"#63758f\"),\n    scene=dict(xaxis_title=\"x₁\", yaxis_title=\"x₂\", zaxis_title=\"f(x₁, x₂)\",\n        bgcolor=\"white\", dragmode=\"orbit\", aspectratio=dict(x=1,y=1,z=0.8)))\nfigure"
+        },
+        {
+          "id": "labnote",
+          "kind": "markdown",
+          "display": "normal",
+          "showCode": false,
+          "source": "打开右侧 **依赖关系图**，查看输入如何从函数和参数流向图形。变量查看器可以直接检查 `x1`、`x2` 与 `height`。"
+        }
+      ]
+    }
+  ]
+}

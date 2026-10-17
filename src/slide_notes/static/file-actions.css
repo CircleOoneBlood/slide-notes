@@ -1,0 +1,18 @@
+#file-context-menu{position:fixed;z-index:100;padding:5px;width:180px;background:#fff;border:1px solid #dbe5f5;border-radius:9px;box-shadow:0 8px 28px #23467424}#file-context-menu button{width:100%;border:0;text-align:left;padding:9px 11px;font-size:12px;border-radius:5px;color:#344f72}#file-context-menu button:hover,#file-context-menu button:focus-visible{background:#edf4ff}.file-drop-target{background:#e9f2ff!important;outline:2px solid #79a5ed;outline-offset:-2px}.files-tools{flex-wrap:wrap}.files-tools strong{cursor:pointer;flex:1;min-width:90px}.files-tools .icon-button{min-width:26px;width:26px;padding:4px}#workspace-trash{min-width:360px;max-width:80vw;border:1px solid #d9e4f5;border-radius:12px;padding:22px;color:#334d70}.trash-row{display:flex;align-items:center;gap:25px;justify-content:space-between;margin:12px 0}.trash-row span{overflow-wrap:anywhere;font-size:13px}
+#file-tree{outline:none}
+#file-tree{min-height:70px}
+#file-tree .file-row.file-cut{opacity:.45}
+#file-context-menu button:disabled{opacity:.45;cursor:default}
+#file-tree:focus-visible{outline:1px solid #aac8fb;outline-offset:-1px}
+#file-tree .file-row{min-height:28px;padding-top:4px;padding-bottom:4px;position:relative;color:#53637e;background-image:var(--tree-guides,none)}
+#file-tree .file-row:hover{background-color:#f3f5fa}
+#file-tree .file-row[aria-selected=true]{background-color:#f0f4fa}
+#file-tree .file-row.current{background-color:#edf3ff;color:#386cbd}
+#file-tree .file-row:focus-visible{outline:1px solid #79a5ed;outline-offset:-1px}
+#file-tree .file-row:has(small){padding-top:7px;padding-bottom:7px}
+#file-tree .tree-chevron{display:flex;align-items:center;width:12px}
+#file-tree .tree-chevron svg{width:12px;height:12px}
+.file-tree-tools{display:flex;justify-content:flex-end;gap:3px;padding:0 12px 3px}
+.file-tree-tools .icon-button{height:25px;min-width:25px;padding:4px;color:#7b8aa1}
+.file-tree-tools .icon-button svg{width:15px;height:15px}
+.file-tree-tools .icon-button[aria-pressed=true]{color:#386cbd;background:#edf3ff}

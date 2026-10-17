@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF · Slide Notes</title>
+<link rel="stylesheet" href="/vendor/pdfjs/pdf_viewer.css">
+<link rel="stylesheet" href="/pdf-reader.css">
+<script type="module" src="/pdf-reader.mjs"></script>
+</head>
+<body>
+<header class="reader-toolbar">
+ <div class="toolbar-group file-group"><button id="outline-toggle" title="文档目录" aria-label="文档目录" aria-expanded="false" aria-controls="outline" data-icon="list-tree"></button><span id="filename"></span></div>
+ <div class="toolbar-group navigation"><button id="previous" aria-label="上一页" title="上一页" data-icon="arrow-up" disabled></button><label><input id="page-number" type="number" min="1" value="1" aria-label="页码" disabled><span id="page-count">/ —</span></label><button id="next" aria-label="下一页" title="下一页" data-icon="arrow-down" disabled></button><span class="separator"></span><button id="zoom-out" aria-label="缩小" title="缩小" data-icon="minus" disabled></button><select id="zoom" aria-label="缩放" disabled><option value="page-width">适应宽度</option><option value="page-fit">适应整页</option><option value="0.75">75%</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option><option value="2">200%</option><option id="custom-scale" value="custom" hidden></option></select><button id="zoom-in" aria-label="放大" title="放大" data-icon="plus" disabled></button></div>
+ <div class="toolbar-group"><button id="pdf-select" title="框选原文加入 AI 对话" aria-label="框选原文" aria-pressed="false" data-icon="scan" disabled></button><button id="search-toggle" title="搜索文字（Ctrl+F）" aria-label="搜索文字" aria-expanded="false" aria-controls="searchbar" data-icon="search" disabled></button><button id="rotate" title="顺时针旋转" aria-label="旋转页面" data-icon="refresh-cw" disabled></button><a id="download" title="下载原始 PDF" aria-label="下载 PDF" data-icon="download"></a><a id="external" target="_blank" rel="noopener" title="使用浏览器阅读器打开" aria-label="使用浏览器阅读器打开" data-icon="move-diagonal"></a></div>
+</header>
+<div id="searchbar" hidden><input id="find-query" type="search" placeholder="搜索文档中的文字" aria-label="搜索内容"><span id="find-result" role="status"></span><button id="find-previous" data-icon="arrow-up" aria-label="上一个匹配"></button><button id="find-next" data-icon="arrow-down" aria-label="下一个匹配"></button><button id="find-close" data-icon="x" aria-label="关闭搜索"></button></div>
+<div id="reading-area">
+ <aside id="outline" hidden aria-label="文档目录"><strong>目录</strong><div id="outline-items"></div></aside>
+ <div role="main" id="viewerContainer" tabindex="0" aria-label="PDF 页面"><div id="viewer" class="pdfViewer"></div></div>
+ <div id="reader-status" role="status">正在加载 PDF…</div>
+</div>
+<dialog id="password-dialog"><form id="password-form"><h2>此 PDF 需要密码</h2><p id="password-hint">输入密码以打开文档</p><input id="password" type="password" autocomplete="off" aria-label="PDF 密码" required><div><button id="password-cancel" type="button">取消</button><button type="submit">打开</button></div></form></dialog>
+</body>
+</html>

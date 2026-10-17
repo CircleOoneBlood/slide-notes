@@ -1,0 +1,128 @@
+/* Reconstructed from the installed default light theme's measured values.
+   Scoped to Markdown content; the workbench keeps its own UI typography. */
+.obsidian-markdown {
+  --md-font-text: ui-sans-serif,-apple-system,BlinkMacSystemFont,system-ui,"Segoe UI","Google Sans Flex",Roboto,"Inter Variable",Inter,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol",sans-serif;
+  --md-font-code: ui-monospace,SFMono-Regular,"Cascadia Mono","Roboto Mono","DejaVu Sans Mono","Liberation Mono",Menlo,Monaco,Consolas,"Source Code Pro",monospace;
+  --md-text:#222;--md-muted:#5c5c5c;--md-faint:#ababab;--md-accent:#7852ee;--md-line:#e4e4e4;--md-code-bg:#fafafa;
+  --md-heading-spacing:2.5rem;--md-paragraph-spacing:1rem;
+  font-family:var(--md-font-text);font-size:16px;line-height:1.5;color:var(--md-text);font-weight:400;
+  letter-spacing:normal;overflow-wrap:break-word;text-align:start;
+}
+.markdown-cell .markdown-preview.obsidian-markdown {padding:24px;max-width:100%;margin:0;min-height:70px;width:100%;box-sizing:border-box;}
+.obsidian-markdown :is(p,li,td,th,blockquote) {color:inherit;font-size:inherit;line-height:inherit;}
+.obsidian-markdown p {margin-block:var(--md-paragraph-spacing);}
+.obsidian-markdown>:first-child {margin-top:0;}
+.obsidian-markdown>:last-child {margin-bottom:0;}
+.obsidian-markdown :is(h1,h2,h3,h4,h5,h6) {font-family:var(--md-font-text);color:var(--md-text);margin-block:var(--md-heading-spacing) 1rem;letter-spacing:normal;}
+.obsidian-markdown h1,.obsidian-markdown .md-heading-1 {font-size:1.618em;font-weight:700;line-height:1.2;}
+.obsidian-markdown h2,.obsidian-markdown .md-heading-2 {font-size:1.462em;font-weight:600;line-height:1.2;}
+.obsidian-markdown h3,.obsidian-markdown .md-heading-3 {font-size:1.318em;font-weight:600;line-height:1.3;}
+.obsidian-markdown h4,.obsidian-markdown .md-heading-4 {font-size:1.188em;font-weight:600;line-height:1.4;}
+.obsidian-markdown h5,.obsidian-markdown .md-heading-5 {font-size:1.076em;font-weight:600;line-height:1.4;}
+.obsidian-markdown h6,.obsidian-markdown .md-heading-6 {font-size:1em;font-weight:600;line-height:1.4;}
+.obsidian-markdown :is(strong,.md-strong) {font-weight:700;}
+.obsidian-markdown :is(em,.md-emphasis) {font-style:italic;}
+.obsidian-markdown :is(del,.md-strikethrough) {text-decoration:line-through;}
+.obsidian-markdown a,.obsidian-markdown .md-link {color:var(--md-accent);text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
+.obsidian-markdown a:hover {color:#916aff;}
+.obsidian-markdown .internal-link {text-decoration:none;}
+.obsidian-markdown :is(code,pre),.obsidian-markdown .md-inline-code {font-family:var(--md-font-code);font-size:.875em;font-weight:400;font-style:normal;}
+.obsidian-markdown :not(pre)>code,.obsidian-markdown .md-inline-code {padding:.15em .3em;border:0;border-radius:4px;background:var(--md-code-bg);color:var(--md-text);}
+.obsidian-markdown pre {position:relative;margin-block:1rem;padding:12px 16px;background:var(--md-code-bg);border:0;border-radius:4px;white-space:pre-wrap;overflow:auto;line-height:1.5;}
+.obsidian-markdown pre code {font-size:inherit;background:none;padding:0;white-space:inherit;line-height:inherit;}
+.obsidian-markdown :is(ul,ol) {padding-inline-start:2.25em;margin-block:1rem;}
+.obsidian-markdown li {margin-block:.075em;}
+.obsidian-markdown li>p {margin-block:.25rem;}
+.obsidian-markdown li>:is(ul,ol) {margin-block:.075em;}
+.obsidian-markdown li::marker {color:var(--md-muted);}
+.obsidian-markdown .contains-task-list {list-style:none;}
+.obsidian-markdown .task-list-item {list-style:none;position:relative;}
+.obsidian-markdown .task-list-item-checkbox {width:15px;height:15px;margin:0 .6em 0 -1.5em;vertical-align:-2px;accent-color:var(--md-accent);border-radius:3px;cursor:pointer;}
+.obsidian-markdown .task-list-item.is-checked {color:var(--md-muted);text-decoration:line-through;}
+.obsidian-markdown blockquote {border:0;border-inline-start:2px solid var(--md-accent);margin:1rem 0;padding:0 0 0 1.5rem;background:transparent;}
+.obsidian-markdown blockquote>p:first-child {margin-top:0;}
+.obsidian-markdown blockquote>p:last-child {margin-bottom:0;}
+.obsidian-markdown .table-wrapper {overflow-x:auto;margin-block:1rem;}
+.obsidian-markdown table {border-collapse:collapse;border-spacing:0;font-size:inherit;width:auto;max-width:100%;margin-block:1rem;}
+.obsidian-markdown :is(td,th) {border:1px solid var(--md-line);padding:4px 8px;line-height:1.3;min-width:36px;}
+.obsidian-markdown th {font-weight:600;background:transparent;color:var(--md-text);}
+.obsidian-markdown hr {border:0;border-top:1px solid var(--md-line);margin:2rem 0;}
+.obsidian-markdown mark {color:inherit;background:rgba(255,208,0,.35);padding:0;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+.obsidian-markdown mark[data-color="red"] {background:#ffb3b3;}
+.obsidian-markdown mark[data-color="orange"] {background:#ffcf9f;}
+.obsidian-markdown mark[data-color="green"] {background:#b2e6b6;}
+.obsidian-markdown mark[data-color="blue"] {background:#b4d6ff;}
+.obsidian-markdown mark[data-color="purple"] {background:#d8c2ff;}
+.obsidian-markdown img {max-width:100%;height:auto;border-radius:0;}
+.obsidian-markdown .tag {font-size:.875em;background:#7852ee1a;color:var(--md-accent);border:1px solid #7852ee26;padding:1px 7px;border-radius:1em;text-decoration:none;white-space:nowrap;}
+.obsidian-markdown .callout {--callout-color:8,109,221;margin:1rem 0;padding:12px 12px 12px 24px;border:0;border-radius:4px;background:rgba(var(--callout-color),.1);overflow:hidden;}
+.obsidian-markdown .callout[data-callout="tip"],.obsidian-markdown .callout[data-callout="summary"],.obsidian-markdown .callout[data-callout="abstract"],.obsidian-markdown .callout[data-callout="tldr"] {--callout-color:0,191,188;}
+.obsidian-markdown .callout[data-callout="success"],.obsidian-markdown .callout[data-callout="check"],.obsidian-markdown .callout[data-callout="done"] {--callout-color:8,185,78;}
+.obsidian-markdown .callout[data-callout="warning"],.obsidian-markdown .callout[data-callout="caution"],.obsidian-markdown .callout[data-callout="attention"],.obsidian-markdown .callout[data-callout="question"] {--callout-color:236,117,0;}
+.obsidian-markdown .callout[data-callout="failure"],.obsidian-markdown .callout[data-callout="fail"],.obsidian-markdown .callout[data-callout="missing"],.obsidian-markdown .callout[data-callout="danger"],.obsidian-markdown .callout[data-callout="error"],.obsidian-markdown .callout[data-callout="bug"] {--callout-color:233,49,71;}
+.obsidian-markdown .callout[data-callout="example"] {--callout-color:120,82,238;}
+.obsidian-markdown .callout[data-callout="quote"],.obsidian-markdown .callout[data-callout="cite"] {--callout-color:158,158,158;}
+.obsidian-markdown .callout-title {display:flex;align-items:center;gap:8px;font-weight:600;color:rgb(var(--callout-color));line-height:1.5;list-style:none;}
+.obsidian-markdown .callout-title[data-callout-generated] {cursor:pointer;}
+.obsidian-markdown .callout-fold {margin-inline-start:auto;transform:rotate(90deg);}
+.obsidian-markdown .callout.is-collapsed .callout-fold {transform:none;}
+.obsidian-markdown details.callout>summary {cursor:pointer;}
+.obsidian-markdown details.callout>summary::after {content:'›';margin-inline-start:auto;transform:rotate(0);transition:transform .12s;}
+.obsidian-markdown details.callout[open]>summary::after {transform:rotate(90deg);}
+.obsidian-markdown .callout-icon {display:inline-flex;width:18px;height:18px;flex-shrink:0;}
+.obsidian-markdown .callout-icon svg {width:18px;height:18px;}
+.obsidian-markdown .callout-content>:first-child {margin-top:.5rem;}
+.obsidian-markdown .callout-content>:last-child {margin-bottom:0;}
+.obsidian-markdown .footnotes {font-size:.875em;color:var(--md-muted);border-top:1px solid var(--md-line);margin-top:2rem;}
+.obsidian-markdown .footnotes p {font-size:inherit;}
+.obsidian-markdown .math-block {overflow:auto hidden;text-align:center;margin-block:1rem;}
+.obsidian-markdown mjx-container {max-width:100%;outline:0;}
+.obsidian-markdown mjx-container[display="true"] {overflow-x:auto;overflow-y:hidden;}
+.obsidian-markdown .math-block>mjx-container[display="true"] {display:block;width:max-content;min-width:100%;max-width:none;overflow:visible;text-align:center;margin:0;}
+.obsidian-markdown .math-error {color:#b32d47;font-family:var(--md-font-code);}
+.obsidian-markdown .MathJax [data-math-link].math-linked-active {background:#7852ee20;border-radius:2px;outline:1px solid #7852ee55;}
+.obsidian-markdown .el-pre {position:relative;}
+.obsidian-markdown .copy-code-button {position:absolute;z-index:1;top:6px;right:6px;padding:3px 7px;border:1px solid var(--md-line);border-radius:4px;background:#fff;color:var(--md-muted);font:11px var(--md-font-text);opacity:0;}
+.obsidian-markdown .el-pre:hover .copy-code-button,.obsidian-markdown .copy-code-button:focus-visible {opacity:1;}
+.obsidian-markdown .internal-embed {display:block;border-inline-start:2px solid var(--md-line);padding:8px 16px;margin-block:1rem;}
+.obsidian-markdown .internal-embed.is-unresolved {color:var(--md-muted);font-size:.875em;}
+.obsidian-markdown .mermaid-block {overflow:auto;margin-block:1rem;text-align:center;}
+.obsidian-markdown .mermaid-block svg {max-width:100%;height:auto;margin:auto;}
+.markdown-cell .cm-editor.obsidian-markdown {background:#fff;border:0;}
+.markdown-cell .obsidian-markdown .cm-scroller {font-family:var(--md-font-text);font-size:16px;line-height:1.5;max-height:none;overflow:visible;}
+.markdown-cell .obsidian-markdown .cm-content {padding:24px;min-height:96px;width:100%;max-width:100%;margin:0;box-sizing:border-box;caret-color:var(--md-text);}
+.markdown-cell .obsidian-markdown .cm-line {padding:0;color:var(--md-text);line-height:1.5;}
+.markdown-cell .obsidian-markdown .cm-gutters {display:none;}
+.obsidian-markdown .md-formatting {color:var(--md-faint);font-weight:400;}
+.obsidian-markdown .md-active-block {background:transparent;}
+.obsidian-markdown .md-math-source {--md-math-token-color:#00b8d4;font-family:var(--md-font-code);font-size:.875em;font-style:italic;color:var(--md-math-token-color);}
+.obsidian-markdown .md-math-command {--md-math-token-color:#ff4b4b;color:var(--md-math-token-color);}
+.obsidian-markdown .md-math-delimiter {--md-math-token-color:#ac7af5;color:var(--md-math-token-color);}
+.obsidian-markdown .md-math-punctuation {--md-math-token-color:#9a8297;color:var(--md-math-token-color);}
+.obsidian-markdown .md-math-number {--md-math-token-color:#986801;color:var(--md-math-token-color);}
+.obsidian-markdown .md-math-source::selection,.obsidian-markdown .md-math-source ::selection {color:var(--md-math-token-color);}
+.obsidian-markdown .markdown-math-edit-preview {padding-block:.25rem .5rem;}
+.obsidian-markdown .markdown-math-edit-preview .math-source-active {background:#ffb52e80;border-radius:3px;}
+.obsidian-markdown .math-rendered-selection {background:#7852ee40;border-radius:2px;}
+.markdown-cell .obsidian-markdown.markdown-widget-selecting .cm-content {caret-color:transparent;}
+.obsidian-markdown.markdown-widget-selecting .cm-cursorLayer {visibility:hidden;}
+.obsidian-markdown .markdown-preview-block {margin:0;padding:0;outline:0;}
+.obsidian-markdown .markdown-preview-block:focus-visible {outline:1px solid var(--md-accent);outline-offset:3px;}
+.obsidian-markdown .markdown-preview-block p {margin:0;}
+.obsidian-markdown .markdown-preview-block>:is(h1,h2,h3,h4,h5,h6) {margin-block:1rem .5rem;}
+.obsidian-markdown .md-heading {margin-block:1rem .5rem;}
+.obsidian-markdown .cm-selectionBackground,.obsidian-markdown.cm-focused .cm-selectionBackground {background:#7852ee26!important;}
+.markdown-cell .obsidian-markdown.markdown-native-selection .cm-selectionLayer {display:none;}
+.markdown-cell .obsidian-markdown.markdown-native-selection .cm-content::selection,
+.markdown-cell .obsidian-markdown.markdown-native-selection .cm-content ::selection {background:#7852ee26!important;}
+.obsidian-markdown .token.comment,.obsidian-markdown .token.prolog {color:#708090;}
+.obsidian-markdown .token.keyword,.obsidian-markdown .token.operator {color:#a626a4;}
+.obsidian-markdown .token.string,.obsidian-markdown .token.attr-value {color:#50a14f;}
+.obsidian-markdown .token.number,.obsidian-markdown .token.boolean {color:#986801;}
+.obsidian-markdown .token.function,.obsidian-markdown .token.class-name {color:#4078f2;}
+.obsidian-markdown .token.punctuation {color:#383a42;}
+.markdown-mode-menu {position:absolute;right:8px;top:38px;z-index:8;display:flex;flex-direction:column;min-width:140px;padding:5px;background:#fff;border:1px solid #e4e4e4;border-radius:6px;box-shadow:0 4px 14px #0002;}
+.markdown-mode-menu button {text-align:left;border:0;border-radius:3px;font-size:12px;padding:7px 10px;color:#444;}
+.markdown-mode-menu button[aria-checked="true"] {color:#7852ee;background:#7852ee12;}
+@media(max-width:700px) {.markdown-cell .markdown-preview.obsidian-markdown,.markdown-cell .obsidian-markdown .cm-content {padding:18px 16px;}}
+@media print {.obsidian-markdown .copy-code-button{display:none}.obsidian-markdown .callout>.callout-content{display:block!important}.obsidian-markdown pre{white-space:pre-wrap;overflow:visible}.obsidian-markdown .math-block{overflow:visible}}

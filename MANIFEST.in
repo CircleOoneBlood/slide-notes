@@ -1,0 +1,20 @@
+include LICENSE README.md pyproject.toml MANIFEST.in AGENTS.md SOURCE_MANIFEST.json
+include install.sh install.ps1 start-notes.sh notes .gitignore .gitattributes
+include .github/workflows/check.yml
+recursive-include src/slide_notes *.py *.json
+recursive-include src/slide_notes/static *
+recursive-include frontend *.json *.js *.mjs *.py *.css *.html *.svg
+recursive-include tests *.py *.cjs *.md
+recursive-include docs *.md
+recursive-include scripts *.py *.json *.md
+global-exclude __pycache__ *.py[cod] .DS_Store
+prune frontend/node_modules
+prune slide_notes
+prune notebooks
+prune material
+prune picture
+prune sessions
+prune .slide-notes
+prune .venv
+prune .git
+exclude .env .env.* idea.md notebook.py notebook.css

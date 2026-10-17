@@ -1,0 +1,8 @@
+#notebook-print-dialog{width:440px;max-width:90vw;padding:25px;border:1px solid #d7e3f4;border-radius:12px;box-shadow:0 18px 65px #24476e26;color:#294365;font:14px var(--ui-font)}
+#notebook-print-dialog::backdrop{background:#1935522c;backdrop-filter:blur(2px)}
+#notebook-print-dialog h2{font-size:19px;margin:0 0 8px}#notebook-print-note{color:#6f84a0;margin:0 0 22px}
+#notebook-print-dialog label{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:14px 0}#notebook-print-dialog [hidden]{display:none!important}
+#notebook-print-dialog select{width:65%;min-width:0;padding:8px;border:1px solid #cfddf0;border-radius:6px;background:#fff;color:#294365;font:inherit}
+#notebook-print-dialog .print-hint{font-size:12px;line-height:1.8;color:#7287a4;margin:20px 0 10px}#notebook-print-status{font-size:12px;color:#b54b4b;min-height:1.4em}
+.print-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.print-actions button{padding:8px 14px;border:1px solid #d5e1f3;border-radius:6px;background:#fff;color:#33577f;font:inherit;cursor:pointer}#notebook-print-submit{background:#397ceb;color:#fff;border-color:#397ceb}.print-actions button:disabled{opacity:.6;cursor:wait}
+.notebook-print-frame{position:fixed;left:-20000px;top:0;width:1100px;height:800px;border:0;pointer-events:none}

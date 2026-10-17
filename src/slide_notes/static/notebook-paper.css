@@ -1,0 +1,14 @@
+@font-face{font-family:PrintSans;src:url('/fonts/pt-sans-latin-400-normal.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:PrintSans;src:url('/fonts/pt-sans-latin-700-normal.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Fira Mono';src:url('/fonts/fira-mono-latin-400-normal.woff2') format('woff2');font-display:swap}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#172138;font-family:PrintSans,Arial,'Noto Sans CJK SC',sans-serif;font-size:14px;line-height:1.65;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{width:100%;--code-font:'Fira Mono',monospace;--ui-font:PrintSans,Arial,sans-serif}
+.print-page{break-before:page}.print-page:first-child{break-before:auto}.print-header{margin:0 0 22px;border-bottom:1px solid #d7e1ed;padding-bottom:13px;break-inside:avoid;break-after:avoid}
+.print-meta{display:flex;justify-content:space-between;gap:15px;font-size:11px;letter-spacing:.03em;color:#6d819c}.print-header h1{margin:5px 0 0;font-size:27px;line-height:1.35;color:#243c5e}.print-runtime-note{font-size:11px;color:#8a6234;margin:8px 0 0}
+.print-row{display:grid;align-items:start;margin:0 0 18px}.print-column{min-width:0}.print-cell{min-width:0;overflow-wrap:anywhere;break-inside:auto}.print-code{padding:10px 12px;background:#f5f8fc;border:1px solid #e1e8f2;border-radius:6px;font-size:12px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-family:var(--code-font);line-height:1.6;margin:8px 0}code{font-family:var(--code-font);font-size:.9em}:not(pre)>code{padding:1px 4px;background:#f1f5fa;border-radius:3px}
+p{margin:.5em 0;orphans:3;widows:3}h1,h2,h3,h4,h5,h6{line-height:1.4;break-after:avoid}h1{font-size:26px}h2{font-size:22px}h3{font-size:18px}blockquote{margin:10px 0;padding:4px 14px;border-left:3px solid #b7cae5;color:#526983}ul,ol{padding-left:24px}a{color:#284f83;text-decoration:underline}
+img,svg,canvas{max-width:100%;height:auto}img.print-plot{display:block;width:100%;object-fit:contain;break-inside:avoid}table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px;table-layout:auto}th,td{border:1px solid #d7e1ed;padding:7px 9px;overflow-wrap:anywhere}th{background:#edf3fa;text-align:left}tr{break-inside:avoid}thead{display:table-header-group}
+.katex-display{max-width:100%;overflow:visible;font-size:.95em}.error-output{color:#ad3434;background:#fff5f5;padding:10px;border-radius:5px}.print-placeholder{color:#8794a7;font-size:12px;font-style:italic}.print-control{display:inline-block;margin:3px 10px 3px 0;color:#486180;font-size:12px}.cell-stale{opacity:1}
+[hidden],.modebar,.plotly-notifier{display:none!important}
+@media screen{body{padding:20px}.print-page{margin-bottom:30px}}

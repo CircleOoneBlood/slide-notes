@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "title": "mo · 双 cell 曲面联动",
+  "slides": [
+    {
+      "id": "demo",
+      "name": "mo · 双 cell 曲面联动",
+      "cells": [
+        {
+          "id": "moparams",
+          "kind": "code",
+          "display": "normal",
+          "showCode": false,
+          "source": "import marimo as mo\n\nx1 = mo.ui.slider(-2, 2, step=0.05, value=0.8, label=\"x₁\", show_value=True)\nx2 = mo.ui.slider(-2, 2, step=0.05, value=-0.6, label=\"x₂\", show_value=True)\nmo.vstack([\n    mo.md(\"## 参数面板\\n\\n$f(x_1,x_2)=x_1^2+x_2^2$\\n\\n拖动滑杆，右侧 cell 自动更新。\"),\n    x1,\n    x2,\n])",
+          "layout": {
+            "row": "surfaceRow",
+            "x": 0,
+            "width": 30
+          }
+        },
+        {
+          "id": "mosurface",
+          "kind": "code",
+          "display": "normal",
+          "showCode": false,
+          "source": "import numpy as np\nimport plotly.graph_objects as go\n\n_axis = np.linspace(-2, 2, 35)\n_gx, _gy = np.meshgrid(_axis, _axis)\n_height = x1.value**2 + x2.value**2\n_fig = go.Figure([\n    go.Surface(x=_gx, y=_gy, z=_gx**2 + _gy**2, colorscale=\"Blues\", opacity=0.8, showscale=False),\n    go.Scatter3d(x=[x1.value], y=[x2.value], z=[_height], mode=\"markers\", marker=dict(size=7,color=\"#e76459\")),\n])\n_fig.update_layout(title=f\"f({x1.value:.2f}, {x2.value:.2f}) = {_height:.3f}\", height=470,\n                   margin=dict(l=0,r=0,t=45,b=0), scene=dict(xaxis_title=\"x₁\",yaxis_title=\"x₂\",zaxis_title=\"f\"))\n_fig",
+          "layout": {
+            "row": "surfaceRow",
+            "x": 30,
+            "width": 70
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+/* Browser-style tabs share one continuous surface with the slide sidebar. */
+#editor-deck{--tab-surface:#f7faff;--tab-strip:#eaf0f9;flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--tab-surface)}
+#notebook-editor{display:flex;flex:1;min-height:0;min-width:0;background:var(--tab-surface)}
+#editor-tabs{display:flex;align-items:stretch;flex-shrink:0;height:46px;min-height:46px;overflow-x:auto;scrollbar-width:thin;background:linear-gradient(to top,var(--tab-surface) 4px,var(--tab-strip) 4px);padding:6px 12px 4px;gap:6px;border:0;isolation:isolate}
+.editor-tab{display:flex;align-items:center;flex-shrink:0;max-width:260px;border:0;border-radius:12px 12px 0 0;color:#60728c;position:relative;background:transparent;transition:background-color 150ms ease,color 150ms ease,box-shadow 150ms ease}
+.editor-tab:hover{background:#dfe8f6;color:#314f76}
+.editor-tab.active{z-index:2;color:#204b7e;background:var(--tab-surface);box-shadow:0 -1px 0 #d5e0ef}
+.editor-tab:before,.editor-tab:after{content:'';position:absolute;bottom:0;width:12px;height:12px;pointer-events:none;opacity:0;transition:opacity 150ms ease}
+.editor-tab:before{left:-12px;background:radial-gradient(circle at 0 0,transparent 11.5px,var(--tab-surface) 12px)}
+.editor-tab:after{right:-12px;background:radial-gradient(circle at 100% 0,transparent 11.5px,var(--tab-surface) 12px)}
+.editor-tab.active:before,.editor-tab.active:after{opacity:1}
+.editor-tab-select{display:flex;align-items:center;gap:8px;border:0!important;border-radius:10px 0 0 0;padding:8px 7px 8px 12px;font-size:13px;font-weight:600;min-width:90px;max-width:222px;white-space:nowrap}
+.editor-tab-select span{overflow:hidden;text-overflow:ellipsis}
+.editor-tab button:hover{background:transparent}
+.editor-tab .ui-icon,#editor-tabs>.editor-tab-new .ui-icon{width:15px;height:15px;flex-shrink:0}
+.editor-tab-close{border:0;width:24px;height:24px;display:grid;place-items:center;padding:5px;margin:0 6px 0 0;color:#8293ac;border-radius:50%;transition:background-color 120ms ease,color 120ms ease}
+.editor-tab .editor-tab-close:hover{background:#dce7f7;color:#284f80}
+.editor-tab-new{display:grid;place-items:center;align-self:center;width:28px;height:28px;padding:6px;border:0;border-radius:50%;margin:0 5px;color:#55769e;transition:background-color 150ms ease}
+.editor-tab-new:hover{background:#dce6f4}
+#notebook-editor>#main{border-radius:12px 0 0 0;background:#fff}
+@media(prefers-reduced-motion:reduce){.editor-tab,.editor-tab:before,.editor-tab:after,.editor-tab-close,.editor-tab-new{transition:none}}
+#pdf-editors{flex:1;min-height:0;background:#e8edf4}.pdf-view{height:100%;display:flex;flex-direction:column}.pdf-toolbar{display:flex;align-items:center;gap:18px;min-height:39px;padding:7px 18px;border-bottom:1px solid #d9e4f3;background:#fff;font-size:12px;color:#5b7291}.pdf-toolbar span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pdf-toolbar a{color:#326ab3;text-decoration:none;white-space:nowrap}.pdf-toolbar a:hover{text-decoration:underline}.pdf-view iframe{width:100%;flex:1;border:0;min-height:0}.viewing-pdf #toggle-sidebar{visibility:hidden}.present #editor-tabs{display:none}.without-notebook #sidebar,.without-notebook #slide-sidebar-resizer{display:none}
+
+/* The editor tabs are the top bar; notebook naming belongs to the slide list. */
+.workspace{height:calc(100dvh - 28px)}
+.sidebar-heading{gap:8px;padding:0 2px 16px;min-width:0}
+.sidebar-heading #document-title{flex:1;min-width:0;max-width:none;width:100%;height:34px;padding:5px 6px;font-size:14px;line-height:24px;font-weight:700;letter-spacing:0;color:#263f62}
+.sidebar-heading #slide-count{flex-shrink:0}
+.statusbar #save-status{display:inline;font-size:10px;color:#657994;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.statusbar #interrupt{height:22px;min-width:24px;padding:3px;font-size:12px;color:#c24646}
+@media(max-width:700px){#notebook-editor>.sidebar{top:46px}.present #notebook-editor>.sidebar{top:0}.statusbar #status-document{max-width:120px}.statusbar #save-status{max-width:120px}}
+
+#image-editors{flex:1;min-height:0;min-width:0;background:#f0f4fa}
+.image-view{display:flex;flex-direction:column;height:100%;min-height:0;min-width:0;color:#506c91}
+.image-view-toolbar{display:flex;align-items:center;gap:7px;min-height:44px;flex-shrink:0;padding:6px 14px;background:#fff;border-bottom:1px solid #dce6f3;font-size:12px;flex-wrap:wrap}
+.image-view-info{margin-right:auto;color:#8195b0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.image-view-toolbar button,.image-view-toolbar a{display:grid;place-items:center;border:0;border-radius:7px;padding:6px 8px;color:#51759f;min-height:28px;text-decoration:none}
+.image-view-toolbar a:hover,.image-view-toolbar button:hover{background:#edf4ff}.image-view-toolbar .ui-icon{width:16px;height:16px}.image-view-percent{min-width:40px;text-align:center;font-variant-numeric:tabular-nums}
+.image-view-stage{position:relative;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;cursor:grab;background-color:#f3f6fb;background-image:linear-gradient(45deg,#e7edf5 25%,transparent 25%),linear-gradient(-45deg,#e7edf5 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e7edf5 75%),linear-gradient(-45deg,transparent 75%,#e7edf5 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0}
+.image-view-stage.panning{cursor:grabbing;user-select:none}.image-view-content{display:grid;place-items:center;min-width:100%;min-height:100%;padding:32px;box-sizing:border-box}.image-view-content img{display:block;max-width:none;max-height:none;flex-shrink:0;box-shadow:0 4px 24px #24476a12;user-select:none}
+.image-preview-dialog{width:min(1200px,94vw);height:min(850px,88dvh);max-height:94dvh;max-width:96vw;padding:0;border:1px solid #c9dbf2;border-radius:16px;background:#fff;box-shadow:0 24px 90px #18335240;overflow:hidden}
+.image-preview-dialog::backdrop{background:#14243b75;backdrop-filter:blur(4px)}.image-preview-heading{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #dce6f3;color:#3c5e87}.image-preview-heading strong{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}.image-preview-heading button{display:grid;place-items:center;border:0;padding:6px}.image-preview-heading .ui-icon{width:18px;height:18px}.image-preview-dialog>.image-view{height:calc(100% - 47px)}

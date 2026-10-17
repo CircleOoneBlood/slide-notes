@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slide Notes · 本地笔记</title>
+  <script>document.documentElement.classList.add('workbench-loading');</script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234f86ec'/%3E%3Cpath d='M9 9h14v14H9zM12 13h8M12 17h6' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css">
+  <link rel="preload" href="/fonts/pt-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/pt-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/fira-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/marimo-output.css">
+  <link rel="stylesheet" href="/panels.css">
+  <link rel="stylesheet" href="/workbench.css">
+  <link rel="stylesheet" href="/code-cell.css">
+  <link rel="stylesheet" href="/theme.css">
+  <link rel="stylesheet" href="/cell-layout.css">
+  <link rel="stylesheet" href="/file-actions.css">
+  <link rel="stylesheet" href="/workspace-menu.css">
+  <link rel="stylesheet" href="/notebook-print.css">
+  <link rel="stylesheet" href="/editor-tabs.css">
+  <link rel="stylesheet" href="/ai.css">
+  <link rel="stylesheet" href="/ai-interface.css">
+  <link rel="stylesheet" href="/obsidian-markdown.css">
+  <link rel="stylesheet" href="/ai-response.css">
+  <script defer src="/vendor/purify.js"></script>
+  <script defer src="/vendor/katex/katex.min.js"></script>
+  <script defer src="/vendor/plotly.js"></script>
+  <script defer src="/vendor/dagre.js"></script>
+  <script defer src="/icons.js"></script>
+  <script defer src="/editor.bundle.js"></script>
+  <script defer src="/plot-theme.js"></script>
+  <script defer src="/marimo-output.js"></script>
+  <script defer src="/html-cell.js"></script>
+  <script defer src="/obsidian-math.bundle.js"></script>
+  <script defer src="/obsidian-diagrams.bundle.js"></script>
+  <script defer src="/obsidian-markdown.bundle.js"></script>
+  <script defer src="/markdown-workspace.js"></script>
+  <script defer src="/ai-response.js"></script>
+  <script defer src="/app.js"></script>
+  <script defer src="/code-cell.js"></script>
+  <script defer src="/cell-layout.js"></script>
+  <script defer src="/outline.js"></script>
+  <script defer src="/history.js"></script>
+  <script defer src="/slide-context.js"></script>
+  <script defer src="/file-actions.js"></script>
+  <script defer src="/file-transfer.js"></script>
+  <script defer src="/file-tree.js"></script>
+  <script defer src="/workspace-menu.js"></script>
+  <script defer src="/notebook-print.js"></script>
+  <script defer src="/editor-tabs.js"></script>
+  <script defer src="/image-viewer.js"></script>
+  <script defer src="/ai-interface.js"></script>
+  <script defer src="/ai-selection.js"></script>
+  <script defer src="/ai.js"></script>
+  <script defer src="/ai-branches.js"></script>
+  <script defer src="/ai-pdf.js"></script>
+  <script defer src="/ai-agent.js"></script>
+  <script defer src="/ai-changes.js"></script>
+  <script defer src="/ai-capture.js"></script>
+  <script defer src="/panels.js"></script>
+</head>
+<body>
+  <div id="workbench-loading" role="status" aria-live="polite">正在恢复工作区…</div>
+  <!-- Programmatic command hooks; visible controls live in cells and menus. -->
+  <div id="notebook-commands" hidden>
+    <button id="mode-edit" aria-pressed="true">编辑</button>
+    <button id="mode-present" aria-pressed="false">放映</button>
+    <button id="run-all">运行全部</button>
+    <button id="export">导出笔记</button>
+  </div>
+  <div class="workspace">
+    <nav class="activity-rail" aria-label="工作区工具">
+      <button id="files-button" class="activity-button" aria-label="Files 文件" title="Files"></button>
+      <button id="variables-button" class="activity-button" aria-label="变量查看器" title="Variables"></button>
+      <button id="packages-button" class="activity-button" aria-label="Packages 包" title="Packages"></button>
+      <button id="outline-button" class="activity-button" aria-label="Outline 大纲" title="Outline"></button>
+      <span class="rail-divider"></span>
+      <button id="graph-button" class="activity-button" aria-label="依赖关系图" title="Dependency graph"></button>
+      <button id="ai-button" class="activity-button" aria-label="AI 助手" title="AI 助手"></button>
+      <button id="help-button" class="activity-button" aria-label="使用说明" title="使用说明">?</button>
+    </nav>
+    <aside id="inspector" hidden><div class="inspector-heading"><strong id="inspector-title"></strong><div><button id="expand-inspector" class="icon-button" aria-label="展开依赖图" title="展开依赖图" hidden>⤢</button><button id="close-inspector" class="icon-button" aria-label="关闭检查面板">×</button></div></div><div id="inspector-content"></div></aside>
+    <div id="tool-panel-resizer" role="separator" aria-orientation="vertical" aria-label="调整工具面板宽度" aria-controls="inspector" tabindex="0" title="拖动调整工具面板宽度；双击恢复默认宽度" hidden></div>
+    <section id="editor-deck" aria-label="编辑区">
+    <nav id="editor-tabs" role="tablist" aria-label="打开的文件" hidden></nav>
+    <div id="notebook-editor">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-heading"><input id="document-title" aria-label="笔记名称" spellcheck="false" title="点击修改笔记名称"><span id="slide-count" title="页面数量"></span></div>
+      <nav id="slide-list" aria-label="笔记页面"></nav>
+      <button id="add-slide" class="add-slide">＋ 新建页面</button>
+      <div class="sidebar-foot"><span class="local-dot"></span>本机 Python <span>·</span> 本地保存</div>
+    </aside>
+    <div id="slide-sidebar-resizer" role="separator" aria-orientation="vertical" aria-label="调整页面侧栏宽度" aria-controls="sidebar" tabindex="0" title="拖动调整页面侧栏宽度；双击恢复默认宽度"></div>
+    <main id="main">
+      <section id="workbench-empty" hidden>
+        <div class="welcome-eyebrow">WELCOME</div><h1>Slide Notes</h1><p id="workbench-empty-label">文字、公式与代码，在同一页开始。</p>
+        <div class="welcome-columns"><div><h2>开始</h2><button id="welcome-open">打开工作区…</button><button id="welcome-create">新建工作区…</button><button id="welcome-new-note" hidden>新建笔记…</button><button id="welcome-open-note" hidden>打开笔记…</button></div><div><h2>最近打开</h2><div id="welcome-recent"></div></div></div>
+      </section>
+      <div class="page-topline"><div class="notebook-page-navigation"><button id="toggle-sidebar" class="notebook-sidebar-toggle" aria-label="收起当前笔记页面目录" aria-controls="sidebar" aria-expanded="true" title="收起当前笔记页面目录"></button><span id="page-eyebrow"></span></div><span id="mode-hint">Shift + Enter 运行当前代码块</span></div>
+      <div class="page-heading"><input id="slide-name" aria-label="页面名称" placeholder="未命名页面"><div id="slide-actions"><button id="slide-up" class="icon-button" title="页面前移" aria-label="页面前移">↑</button><button id="slide-down" class="icon-button" title="页面后移" aria-label="页面后移">↓</button><button id="delete-slide" class="icon-button" aria-label="删除页面" title="删除页面">×</button></div></div>
+      <div id="cells"></div>
+      <div id="empty-slide" hidden>这一页还没有可展示的内容。</div>
+    </main>
+    </div>
+    <section id="image-editors" aria-label="图片查看器" hidden></section>
+    <section id="pdf-editors" aria-label="PDF 阅读器" hidden></section>
+    </section>
+  </div>
+  <footer class="statusbar"><div><span id="error-count">ⓧ 0</span><span id="status-document">本地笔记</span><span id="save-status" role="status">正在打开…</span><button id="interrupt" class="icon-button" aria-label="停止计算" title="停止计算并重置 Python 会话" hidden>■</button></div><div class="system-metrics"><span id="metric-kernel" class="metric" aria-label="Python 内存"><span class="metric-icon"></span><span class="meter"><i></i></span></span><span id="metric-memory" class="metric" aria-label="系统内存"><span class="metric-icon"></span><span class="meter"><i></i></span></span><span id="metric-cpu" class="metric" aria-label="CPU 使用率"><span class="metric-icon"></span><span class="meter"><i></i></span></span><span id="python-version">Python</span></div></footer>
+  <dialog id="file-preview"><div class="preview-heading"><strong></strong><button class="icon-button" aria-label="关闭文件预览">×</button></div><p class="preview-info"></p><pre></pre></dialog>
+  <dialog id="new-notebook"><form><h3>新建笔记</h3><label>笔记名称<input name="title" placeholder="未命名笔记" maxlength="150" required></label><p>保存到文件树当前选中的文件夹。</p><div><button type="button" id="cancel-notebook">取消</button><button type="submit" class="primary-button">创建笔记</button></div></form></dialog>
+<dialog id="notebook-print-dialog" aria-labelledby="notebook-print-title"><form id="notebook-print-form"><h2 id="notebook-print-title">导出 PDF / 打印</h2><p id="notebook-print-note"></p><label>打印范围<select id="notebook-print-scope"><option value="all">整个笔记</option><option value="page">单页（默认当前页）</option></select></label><label id="notebook-print-page-label" hidden>选择页面<select id="notebook-print-page"></select></label><label>纸张方向<select id="notebook-print-orientation"><option value="landscape">A4 横向</option><option value="portrait">A4 纵向</option></select></label><p class="print-hint">将打开浏览器打印窗口，选择“另存为 PDF”或打印机。每个笔记页面从新纸页开始，较长内容自动续页。Fragment 全部展开，Skip 内容不打印，代码按“显示源码”设置输出。</p><p id="notebook-print-status" role="status" aria-live="polite"></p><div class="print-actions"><button id="notebook-print-cancel" type="button">取消</button><button id="notebook-print-submit" type="submit">继续打印</button></div></form></dialog>
+<dialog id="workspace-dialog"><form id="workspace-form"><h2 id="dialog-title">打开 Workspace</h2><label>文件夹路径<div class="path-input"><input id="workspace-input" required placeholder="/home/你的用户名/笔记"><button id="browse" type="button">浏览…</button></div></label><p id="create-hint" hidden>填写新文件夹的完整路径，应用会创建它。</p><div class="actions"><button type="button" data-close>取消</button><button class="primary" type="submit">打开</button></div><p id="dialog-error" role="alert"></p></form></dialog>
+<dialog id="folder-browser"><h2>选择文件夹</h2><div class="path-input"><button id="parent-folder">上一级</button><input id="folder-path" aria-label="浏览路径"><button id="go-folder">前往</button></div><div id="folder-list"></div><p id="folder-error" role="alert"></p><div class="actions"><button id="cancel-browser">取消</button><button id="select-folder" class="primary">选择此文件夹</button></div></dialog>
+
+  <dialog id="open-note-dialog"><h2>打开笔记</h2><input id="open-note-search" type="search" placeholder="搜索笔记…" aria-label="搜索笔记"><div id="open-note-list"></div><button type="button" id="cancel-open-note">关闭</button></dialog>
+  <dialog id="environment-dialog"><h2>Python 运行环境</h2><p id="environment-status"></p><pre id="environment-log"></pre><button id="environment-retry">重试初始化</button><button id="environment-close">关闭</button></dialog>
+  <div id="workspace-file-menu" role="menu" hidden></div>
+  <div id="toast" role="status" hidden><span></span><button hidden>撤销</button></div>
+</body>
+</html>

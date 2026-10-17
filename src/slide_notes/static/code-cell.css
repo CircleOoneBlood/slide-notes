@@ -1,0 +1,57 @@
+.cell.code-cell{border:0;border-radius:0;background:transparent;overflow:visible;margin:3px 29px 3px 0;box-shadow:none}
+.code-shell{position:relative;border:1px solid #d4d9e1;border-radius:12px;background:white;min-height:60px;padding:2px 0 0;box-shadow:0 1px 2px #20324a03}
+.code-cell:focus-within .code-shell,.code-cell.cell-selected .code-shell{border-color:#a9bad2;box-shadow:0 0 0 1px #edf2f9}
+.code-editor-host{border-radius:12px;overflow:hidden;padding-right:5px}
+.code-actions{position:absolute;right:9px;top:-16px;display:flex;align-items:center;gap:4px;z-index:3}
+.code-action{display:flex;align-items:center;justify-content:center;width:29px;height:29px;min-width:0;padding:5px;border:1px solid #dfe5ee;border-radius:50%;background:#fff;color:#6f7e94;box-shadow:0 1px 2px #22375012}
+.code-action:hover{background:#f7f9fd;border-color:#bdcce1;color:#4677b9}.code-action:disabled{opacity:1;color:#c0c8d5;background:#fcfdff;cursor:default}.code-action .ui-icon{width:16px;height:16px;stroke-width:1.65}
+.code-settings .cell-delete{width:100%;height:34px;justify-content:flex-start;gap:9px;margin-top:12px;padding:8px;border:0;border-radius:5px;box-shadow:none;color:#b44f50;font-size:12px}
+.code-settings .cell-delete:hover,.code-settings .cell-delete:focus-visible{color:#a83d40;background:#fff2f2;outline-color:#d79191}
+.code-settings .cell-copy{width:100%;height:34px;justify-content:flex-start;gap:9px;margin-top:12px;padding:8px;border:0;border-radius:5px;box-shadow:none;color:#63758e;font-size:12px}
+.code-settings .cell-copy:hover{background:#f1f5fb;color:#477bbf}
+.cell-drag-handle.code-action{position:absolute;right:5px;bottom:4px;width:24px;height:24px;z-index:2;padding:4px;border-radius:5px;color:#7c8da6;background:#f6f8fc;box-shadow:none;cursor:grab}.cell-drag-handle:active{cursor:grabbing}.cell-drag-handle .ui-icon{width:19px;height:19px}
+.cell-timing{position:absolute;right:-45px;top:9px;width:34px;font:10px/1.5 var(--ui-font);color:#8c929b;text-align:center;white-space:nowrap}
+.code-shell>.cell-status{position:absolute;left:9px;top:-9px;padding:0 4px;background:#fff;font:10px var(--ui-font);color:#bf6763}.code-shell>.cell-status:empty{display:none}
+.code-cell:has(.code-settings:not([hidden])){z-index:5}
+.code-more[aria-expanded=true]{background:#edf3fc;color:#4b79b9;border-color:#a9bfdd}
+.code-settings{position:absolute;right:7px;top:23px;z-index:12;width:290px;max-width:calc(100vw - 100px);padding:15px;border:1px solid #dde4ee;border-radius:12px;background:#fff;box-shadow:0 8px 32px #2335531a,0 2px 6px #23355308;color:#596b84}
+.code-settings-title{display:flex;align-items:center;justify-content:space-between;font:10px var(--code-font);letter-spacing:.4px;color:#96a1b2;margin-bottom:18px}
+.cell-kind-badge{font:10px var(--ui-font);letter-spacing:0;padding:3px 7px;border-radius:4px;background:#f4f6fa;color:#8996a9}
+.cell-setting-label{font-size:12px;font-weight:700;color:#596b84;margin-bottom:9px}
+.cell-display-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;background:#f2f5fa;border:1px solid #eef1f6;border-radius:8px;padding:4px;position:relative}
+.cell-setting-hint{position:relative;min-width:0}.cell-display-options>.cell-setting-hint{position:static}
+.cell-display-option{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;height:57px;padding:7px 3px;border:1px solid transparent;border-radius:5px;color:#8b98ab;font-size:12px;background:transparent}
+.cell-display-option .ui-icon{width:17px;height:17px;stroke-width:1.65}
+.cell-display-option:hover{color:#607c9f;background:#e9eff8;border-color:transparent}
+.cell-display-option[aria-checked=true]{color:#477bbf;background:#fff;border-color:#dce5f3;box-shadow:0 1px 3px #2d4e7910}
+.cell-display-option:focus-visible,.cell-code-toggle:focus-visible{outline:2px solid #90b3e3;outline-offset:2px}
+.cell-setting-tooltip{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:20;background:#39475d;color:#f6f8fc;border:1px solid #485870;border-radius:6px;padding:9px 11px;font-size:11px;line-height:1.65;font-weight:400;box-shadow:0 4px 12px #23355316;pointer-events:none}
+.cell-code-toggle-row{margin-top:14px}
+.cell-code-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 0;gap:12px;border:0;border-radius:5px;background:transparent;color:#63758e;font-size:12px;text-align:left}
+.cell-code-toggle:hover{background:#f7f9fc;border-color:transparent}.cell-toggle-label{display:flex;align-items:center;gap:9px}.cell-toggle-label>.ui-icon{width:16px;height:16px;color:#91a0b5}
+.cell-switch-track{flex-shrink:0;width:30px;height:18px;border-radius:12px;background:#d5dce6;padding:2px;transition:background-color .15s}
+.cell-switch-track>span{display:block;width:14px;height:14px;border-radius:50%;background:white;box-shadow:0 1px 2px #283d5926;transition:transform .15s}
+.cell-code-toggle[aria-checked=true] .cell-switch-track{background:#6c92c9}.cell-code-toggle[aria-checked=true] .cell-switch-track>span{transform:translateX(12px)}
+.code-order{border-top:1px solid #edf0f5;padding-top:10px;margin-top:13px;display:flex;align-items:center;gap:5px}.code-order>span{font-size:11px;color:#95a1b3;margin-right:auto}.code-order>.icon-button{width:27px;min-width:27px;height:27px;padding:5px;border:1px solid #e6ebf3;border-radius:5px;color:#8192aa}.code-order>.icon-button:disabled{opacity:.3}.code-order>.icon-button:hover:enabled{background:#f1f5fb;border-color:#d4e0ef}
+.code-cell>.cell-output{padding:0 10px;background:white;border-radius:0 0 8px 8px}.code-cell>.cell-output:has(.control-row[hidden]):has(.stdout[hidden]):has(.result:empty):has(.error-output[hidden]){display:none}
+.code-cell>.cell-output:has(.control-row:not([hidden])),.code-cell>.cell-output:has(.result:not(:empty)),.code-cell>.cell-output:has(.error-output:not([hidden])){margin-top:13px}
+.cell-insert{justify-content:flex-start;height:27px}.cell-insert>button{margin-left:-30px;border:0;background:transparent;border-radius:4px;color:#9ba6b4;opacity:.65;font-size:21px;width:24px;height:23px;line-height:20px}.cell-insert:hover>button,.cell-insert:focus-within>button{color:#6286ba;background:#edf3fc;opacity:1}.insert-menu{left:-9px;top:23px}
+.cell-dragging{opacity:.45}.cell-drop-before:before,.cell-drop-after:after{content:'';position:absolute;left:0;right:0;height:2px;background:#719be1;z-index:4}.cell-drop-before:before{top:-12px}.cell-drop-after:after{bottom:-12px}
+.present .code-cell .code-shell{display:none}.present .code-cell[data-show-code=true] .code-shell{display:block}.present .code-cell{margin:0;background:white}.present .code-actions,.present .cell-delete,.present .cell-drag-handle,.present .cell-timing,.present .code-settings,.present .code-shell>.cell-status{display:none!important}.present .code-cell>.cell-output{padding:0;margin-top:0}.present .code-cell[data-show-code=true]>.cell-output{margin-top:15px}.present .code-cell:focus-within{box-shadow:none}
+@media(max-width:900px){#main{padding-left:34px;padding-right:28px}.cell.code-cell{margin-right:23px}.cell-timing{right:-35px;width:30px;font-size:9px}.code-editor-host .cm-editor{font-size:12px}}
+
+.markdown-cell .markdown-preview{min-height:70px;padding:18px 25px 22px}
+.markdown-cell .markdown-preview>:first-child{margin-top:0}
+.markdown-cell .markdown-preview>:last-child{margin-bottom:0}
+.markdown-cell.markdown-editing .code-editor-host{padding-bottom:6px}
+.present .markdown-cell .code-shell{display:block;border:0;border-radius:0;padding:0;box-shadow:none;min-height:0}
+.present .markdown-cell .markdown-preview{padding:0 0 9px;min-height:0}
+.present .markdown-cell .code-editor-host{display:none}
+
+.cell-setting-tooltip.tooltip-above{top:auto;bottom:calc(100% + 8px)}
+
+/* Edit-mode code folding leaves rich outputs and controls mounted. */
+body:not(.present) .code-cell[data-code-collapsed=true]:not(.markdown-cell) .code-shell{min-height:30px;padding:0;border-color:transparent;background:transparent;box-shadow:none}
+body:not(.present) .code-cell[data-code-collapsed=true]:not(.markdown-cell) .code-actions{top:0}
+body:not(.present) .code-cell[data-code-collapsed=true]:not(.markdown-cell) .cell-drag-handle{left:0;right:auto;top:2px;bottom:auto}
+body:not(.present) .code-cell[data-code-collapsed=true]:not(.markdown-cell) .cell-timing{top:7px}

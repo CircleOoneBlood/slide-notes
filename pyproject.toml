@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "slide-notes-local"
+version = "0.3.1"
+description = "Local slide-first reactive Python notebooks with workspace management"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = ["marimo==0.25.1", "numpy==2.5.3", "plotly==7.1.0", "psutil==7.2.2"]
+
+[project.optional-dependencies]
+dev = ["build==1.6.1", "playwright==1.63.0"]
+
+[project.scripts]
+slide-notes = "slide_notes.launcher:main"
+slide-notes-agent = "slide_notes.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["slide_notes*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+slide_notes = ["static/*", "static/fonts/*", "static/licenses/*", "static/vendor/*", "static/vendor/mathjax/*", "static/vendor/pdfjs/*", "static/vendor/pdfjs/cmaps/*", "static/vendor/pdfjs/standard_fonts/*", "static/vendor/pdfjs/wasm/*", "static/vendor/pdfjs/iccs/*", "static/vendor/pdfjs/images/*", "static/vendor/katex/*", "static/vendor/katex/fonts/*", "static/vendor/katex/contrib/*", "examples/*.json", "example.json"]

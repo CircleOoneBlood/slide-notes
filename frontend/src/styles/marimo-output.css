@@ -1,0 +1,17 @@
+.mo-output{color:#000;font-size:15px;line-height:1.8;overflow-wrap:anywhere}
+.mo-output .paragraph{display:block;margin:.4em 0}
+.mo-output :is(h1,h2,h3,h4,h5,h6){color:#000;line-height:1.5}
+.mo-output :is(p,li,a,code,blockquote){color:#000}
+.mo-output pre{overflow:auto;background:#f6f8fc;padding:12px;border-radius:7px}
+.mo-output marimo-ui-element{display:block;min-width:0}
+.mo-control{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:10px 0;color:#334e74;font-size:13px}
+.mo-control-label{min-width:32px;font-weight:700}.mo-control-label p{margin:0;color:inherit;font-size:13px}
+.mo-control input[type=range]{flex:1;min-width:70px;accent-color:#4f86ec}
+.mo-control-value{min-width:42px;padding:2px 6px;text-align:center;border-radius:5px;background:#edf4ff;color:#365d95;font:12px var(--code-font)}
+.mo-control :is(input[type=number],input[type=text],input[type=password],select){flex:1;min-width:70px;max-width:100%;padding:7px 9px;border:1px solid #ccdaee;border-radius:6px;background:white;color:#334e74}
+.mo-control input[type=checkbox]{width:17px;height:17px;accent-color:#4f86ec}
+.mo-control :disabled{opacity:.5;cursor:not-allowed}.mo-control .katex{color:inherit}
+.mo-output .plot{min-height:300px}.present .mo-output{color:#000}
+.mo-output table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+.mo-output :is(th,td){padding:7px 12px;border-bottom:1px solid #e0e7f1;text-align:left}
+.mo-output th{background:#f4f7fc;font-weight:700}

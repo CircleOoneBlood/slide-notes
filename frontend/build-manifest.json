@@ -1,0 +1,232 @@
+{
+  "format": 1,
+  "output": "../src/slide_notes/static",
+  "copy": [
+    {
+      "source": "src/ai/ai-agent.js",
+      "target": "ai-agent.js"
+    },
+    {
+      "source": "src/ai/ai-branches.js",
+      "target": "ai-branches.js"
+    },
+    {
+      "source": "src/ai/ai-capture.js",
+      "target": "ai-capture.js"
+    },
+    {
+      "source": "src/ai/ai-changes.js",
+      "target": "ai-changes.js"
+    },
+    {
+      "source": "src/styles/ai-interface.css",
+      "target": "ai-interface.css"
+    },
+    {
+      "source": "src/ai/ai-interface.js",
+      "target": "ai-interface.js"
+    },
+    {
+      "source": "src/ai/ai-pdf.js",
+      "target": "ai-pdf.js"
+    },
+    {
+      "source": "src/styles/ai-response.css",
+      "target": "ai-response.css"
+    },
+    {
+      "source": "src/ai/ai-response.js",
+      "target": "ai-response.js"
+    },
+    {
+      "source": "src/ai/ai-selection.js",
+      "target": "ai-selection.js"
+    },
+    {
+      "source": "src/styles/ai.css",
+      "target": "ai.css"
+    },
+    {
+      "source": "src/ai/ai.js",
+      "target": "ai.js"
+    },
+    {
+      "source": "src/workbench/app.js",
+      "target": "app.js"
+    },
+    {
+      "source": "src/styles/cell-layout.css",
+      "target": "cell-layout.css"
+    },
+    {
+      "source": "src/workbench/cell-layout.js",
+      "target": "cell-layout.js"
+    },
+    {
+      "source": "src/styles/code-cell.css",
+      "target": "code-cell.css"
+    },
+    {
+      "source": "src/workbench/code-cell.js",
+      "target": "code-cell.js"
+    },
+    {
+      "source": "src/styles/editor-tabs.css",
+      "target": "editor-tabs.css"
+    },
+    {
+      "source": "src/workbench/editor-tabs.js",
+      "target": "editor-tabs.js"
+    },
+    {
+      "source": "src/styles/file-actions.css",
+      "target": "file-actions.css"
+    },
+    {
+      "source": "src/files/file-actions.js",
+      "target": "file-actions.js"
+    },
+    {
+      "source": "src/files/file-transfer.js",
+      "target": "file-transfer.js"
+    },
+    {
+      "source": "src/files/file-tree.js",
+      "target": "file-tree.js"
+    },
+    {
+      "source": "src/workbench/history.js",
+      "target": "history.js"
+    },
+    {
+      "source": "src/workbench/html-cell.js",
+      "target": "html-cell.js"
+    },
+    {
+      "source": "src/workbench/icons.js",
+      "target": "icons.js"
+    },
+    {
+      "source": "src/workbench/image-viewer.js",
+      "target": "image-viewer.js"
+    },
+    {
+      "source": "src/styles/marimo-output.css",
+      "target": "marimo-output.css"
+    },
+    {
+      "source": "src/workbench/marimo-output.js",
+      "target": "marimo-output.js"
+    },
+    {
+      "source": "src/markdown/markdown-workspace.js",
+      "target": "markdown-workspace.js"
+    },
+    {
+      "source": "src/styles/notebook-paper.css",
+      "target": "notebook-paper.css"
+    },
+    {
+      "source": "src/styles/notebook-print.css",
+      "target": "notebook-print.css"
+    },
+    {
+      "source": "src/workbench/notebook-print.js",
+      "target": "notebook-print.js"
+    },
+    {
+      "source": "src/styles/obsidian-markdown.css",
+      "target": "obsidian-markdown.css"
+    },
+    {
+      "source": "src/workbench/outline.js",
+      "target": "outline.js"
+    },
+    {
+      "source": "src/styles/panels.css",
+      "target": "panels.css"
+    },
+    {
+      "source": "src/workbench/panels.js",
+      "target": "panels.js"
+    },
+    {
+      "source": "src/pdf/pdf-ai-context.mjs",
+      "target": "pdf-ai-context.mjs"
+    },
+    {
+      "source": "src/styles/pdf-reader.css",
+      "target": "pdf-reader.css"
+    },
+    {
+      "source": "src/pdf/pdf-reader.mjs",
+      "target": "pdf-reader.mjs"
+    },
+    {
+      "source": "src/pdf/pdf-selection.mjs",
+      "target": "pdf-selection.mjs"
+    },
+    {
+      "source": "src/workbench/plot-theme.js",
+      "target": "plot-theme.js"
+    },
+    {
+      "source": "src/workbench/slide-context.js",
+      "target": "slide-context.js"
+    },
+    {
+      "source": "src/styles/style.css",
+      "target": "style.css"
+    },
+    {
+      "source": "src/styles/theme.css",
+      "target": "theme.css"
+    },
+    {
+      "source": "src/styles/workbench.css",
+      "target": "workbench.css"
+    },
+    {
+      "source": "src/styles/workspace-menu.css",
+      "target": "workspace-menu.css"
+    },
+    {
+      "source": "src/workbench/workspace-menu.js",
+      "target": "workspace-menu.js"
+    },
+    {
+      "source": "public/index.html",
+      "target": "index.html"
+    },
+    {
+      "source": "public/pdf-reader.html",
+      "target": "pdf-reader.html"
+    },
+    {
+      "source": "public/app-icon.svg",
+      "target": "app-icon.svg"
+    }
+  ],
+  "bundles": [
+    {
+      "source": "src/editor/editor-src.js",
+      "target": "editor.bundle.js",
+      "global": "NotebookCodeEditor"
+    },
+    {
+      "source": "src/markdown/markdown-math-src.js",
+      "target": "obsidian-math.bundle.js",
+      "global": "ObsidianMath"
+    },
+    {
+      "source": "src/markdown/markdown-renderer-src.js",
+      "target": "obsidian-markdown.bundle.js",
+      "global": "ObsidianMarkdown"
+    },
+    {
+      "source": "src/markdown/markdown-diagrams-src.js",
+      "target": "obsidian-diagrams.bundle.js",
+      "global": "ObsidianDiagrams"
+    }
+  ]
+}
